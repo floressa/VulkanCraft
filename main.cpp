@@ -10,6 +10,16 @@
 const int WIDTH = 800;
 const int HEIGHT = 600;
 
+const std::vector<const char*> validationLayers = {
+	"VK_LAYER_LUNARG_standard_validation"
+};
+
+#ifdef NDEBUG
+	const bool enableValidationLayers = false;
+#else
+	const bool enableValidationLayers = true;
+#endif
+
 class HelloTriangleApplication {
 public:
     void run() {
@@ -68,20 +78,20 @@ private:
         verifyExtensions();
     }
 
+	// #TODO : Add extension verification support
     void verifyExtensions() {
         // Get extension length and populate a property array with the same function twice
         uint32_t extensionCount = 0;
         vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, nullptr);
+
         std::vector<VkExtensionProperties> extensions(extensionCount);
         vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, extensions.data());
 
-        uint32_t glfwExtensionCount = 0;
-        const char** requiredExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
-        
-        for (const auto& extension : requiredExtensions) {
-            /*if (extensions.find)*/
-        }
+		std::cout << "available extensions:" << std::endl;
 
+		for (const auto& extension : extensions) {
+			std::cout << "\t" << extension.extensionName << std::endl;
+		}
     }
 
     void mainLoop() {
@@ -91,6 +101,8 @@ private:
     }
 
     void cleanup() {
+		vkDestroyInstance(instance, nullptr);
+
         glfwDestroyWindow(window);
 
         glfwTerminate();
