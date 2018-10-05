@@ -1,0 +1,3 @@
+C:/Users/sflores/Documents/Scratch/VulkanCraft/build/CMakeFiles/VulkanCraft.dir
+C:/Users/sflores/Documents/Scratch/VulkanCraft/build/CMakeFiles/edit_cache.dir
+C:/Users/sflores/Documents/Scratch/VulkanCraft/build/CMakeFiles/rebuild_cache.dir
