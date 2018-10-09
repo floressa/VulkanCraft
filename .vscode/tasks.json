@@ -23,7 +23,7 @@
             "options": {
                 "cwd": "${workspaceRoot}/build"
             },
-            "command": "nmake",
+            "command": "g++",
             "group": {
                 "kind": "build",
                 "isDefault": true
