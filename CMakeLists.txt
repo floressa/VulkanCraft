@@ -1,17 +1,52 @@
 cmake_minimum_required(VERSION 3.0.0)
 
-#set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake")
+project(VulkanCraft)
+
+#--------------------------------------------------
+# CMake Config header
+#--------------------------------------------------
+# Configure a header file to pass some of the CMake settings
+# to the source code
+configure_file(
+    "${PROJECT_SOURCE_DIR}/cmake/VulkanCraftConfig.h.in"
+    "${PROJECT_BINARY_DIR}/VulkanCraftConfig.h"
+)
+
+# Add the binary tree to the search path for include files
+# so that we will find VulkanCraftConfig.h
+include_directories("${PROJECT_BINARY_DIR}")
+
+
+#--------------------------------------------------
+# VulkanCraft Compile options declaration
+#--------------------------------------------------
+option(GNU_COMPILED "Use GNU Compiler" ON)
+option(AUTO_LOCATE_VULKAN "AUTO_LOCATE_VULKAN" ON)
+
+
+#--------------------------------------------------
+# GLFW
+#--------------------------------------------------
 set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
-set(BUILD_SHARED_LIBS ON)
 
+add_subdirectory(lib/GLFW)
+
+
+#--------------------------------------------------
+# GLM
+#--------------------------------------------------
 set(GLM_TEST_ENABLE OFF)
 set(GLM_QUIET OFF)
 
+set(GLM_INCLUDE_DIR "lib/GLM/glm")
+include_directories(${GLM_INCLUDE_DIR})
 
-option(AUTO_LOCATE_VULKAN "AUTO_LOCATE_VULKAN" ON)
 
+#--------------------------------------------------
+# Vulkan
+#--------------------------------------------------
 if (AUTO_LOCATE_VULKAN)
     # Auto find Vulkan with CMake 3.7 or greater
     find_package(Vulkan)
@@ -39,31 +74,37 @@ if (AUTO_LOCATE_VULKAN)
     endif()
 endif()
 
-project(VulkanCraft)
 
-add_subdirectory(lib/GLFW)
-set(GLM_INCLUDE_DIR "lib/GLM/glm")
-include_directories(${GLM_INCLUDE_DIR})
-
+# Executable creation
 add_executable(${PROJECT_NAME} main.cpp)
 
+
+#--------------------------------------------------
+# Target Definitions
+#--------------------------------------------------
+target_include_directories(${PROJECT_NAME} PUBLIC ${VULKAN_INCLUDE_DIR})
 target_link_libraries(${PROJECT_NAME} glfw)
+target_link_libraries(${PROJECT_NAME} ${VULKAN_LIBRARY})
 
 if (WIN32)
     target_compile_definitions(${PROJECT_NAME} PRIVATE VK_USE_PLATFORM_WIN32_KHR)
 endif()
 
-target_include_directories(${PROJECT_NAME} PUBLIC ${VULKAN_INCLUDE_DIR})
-target_link_libraries(${PROJECT_NAME} ${VULKAN_LIBRARY})
 
-# Define C++ version to be used for building the project
+#--------------------------------------------------
+# Define C++ Build options
+#--------------------------------------------------
 set_target_properties(${PROJECT_NAME} PROPERTIES 
     CXX_STANDARD 17
     CXX_STANDARD_REQUIRED ON
     CXX_EXTENSIONS ON
 )
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17")
 
+
+#--------------------------------------------------
 # Define C version to be used for building the project
+#--------------------------------------------------
 set_target_properties(${PROJECT_NAME} PROPERTIES
     C_STANDARD 99
     C_STANDARD_REQUIRED ON

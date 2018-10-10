@@ -1,16 +1,24 @@
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
 
+//#include "VulkanCraftConfig.h"
+
 #include <algorithm>
 #include <cstdlib>
 #include <cstring>
 #include <functional>
 #include <iostream>
-#include <experimental/optional>
 #include <set>
 #include <stdexcept>
 #include <vector>
 #include <fstream>
+
+// Will need to change if compiled without c++17 standard
+#ifdef GNU_COMPILED
+#include <experimental/optional>
+#else
+#include <optional>
+#endif
 
 const int WIDTH = 800;
 const int HEIGHT = 600;
@@ -55,8 +63,13 @@ void DestroyDebugUtilsMessengerEXT(
 
 struct QueueFamilyIndices
 {
+#ifdef GNU_COMPILED
     std::experimental::optional<uint32_t> graphicsFamily;
     std::experimental::optional<uint32_t> presentFamily;
+#else
+    std::optional<uint32_t> graphicsFamily;
+    std::optional<uint32_t> presentFamily;
+#endif
 
     bool isComplete() {
         if (graphicsFamily)
@@ -105,16 +118,16 @@ public:
         if (!file.is_open())
         {
             throw std::runtime_error("failed to open file!");
-
-            size_t fileSize = (size_t) file.tellg();
-            std::vector<char> buffer(fileSize);
-
-            file.seekg(0);
-            file.read(buffer.data(), fileSize);
-
-            file.close();
-            return buffer;
         }
+
+        size_t fileSize = (size_t) file.tellg();
+        std::vector<char> buffer(fileSize);
+
+        file.seekg(0);
+        file.read(buffer.data(), fileSize);
+
+        file.close();
+        return buffer;
     }
 
 private:
@@ -134,6 +147,8 @@ private:
     VkExtent2D swapChainExtent;
     std::vector<VkImageView> swapChainImageViews;
 
+    VkPipeline graphicsPipeline;
+    VkRenderPass renderPass;
     VkPipelineLayout pipelineLayout;
 
     void initWindow()
@@ -155,6 +170,7 @@ private:
         createLogicalDevice();
         createSwapChain();
         createImageViews();
+        createRenderPass();
         createGraphicsPipeline();
     }
 
@@ -169,7 +185,9 @@ private:
     void cleanup()
     {
         // Device cleanup
+        vkDestroyPipeline(device, graphicsPipeline, nullptr);
         vkDestroyPipelineLayout(device, pipelineLayout, nullptr);
+        vkDestroyRenderPass(device, renderPass, nullptr);
         for (auto imageView : swapChainImageViews)
         {
             vkDestroyImageView(device, imageView, nullptr);
@@ -720,6 +738,32 @@ private:
             throw std::runtime_error("failed to create pipeline layout!");
         }
 
+        VkGraphicsPipelineCreateInfo pipelineInfo = {};
+        pipelineInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
+        pipelineInfo.stageCount = 2;
+        pipelineInfo.pStages = shaderStages;
+        pipelineInfo.pVertexInputState = &vertexInputInfo;
+        pipelineInfo.pInputAssemblyState = &inputAssembly;
+        pipelineInfo.pViewportState = &viewportState;
+        pipelineInfo.pRasterizationState = &rasterizer;
+        pipelineInfo.pMultisampleState = &multisampling;
+        pipelineInfo.pDepthStencilState = nullptr; // Optional
+        pipelineInfo.pColorBlendState = &colorBlending;
+        pipelineInfo.pDynamicState = nullptr;
+
+        pipelineInfo.layout = pipelineLayout;
+        pipelineInfo.renderPass = renderPass;
+        pipelineInfo.subpass = 0;
+
+        pipelineInfo.basePipelineHandle = VK_NULL_HANDLE; // Optional
+        pipelineInfo.basePipelineIndex = -1; // Optional
+
+        if (vkCreateGraphicsPipelines(
+            device, VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &graphicsPipeline) != VK_SUCCESS)
+        {
+            throw std::runtime_error("Failed to create a graphics pipeline!");
+        }
+
         vkDestroyShaderModule(device, fragShaderModule, nullptr);
         vkDestroyShaderModule(device, vertShaderModule, nullptr);
     }
@@ -734,10 +778,44 @@ private:
         VkShaderModule shaderModule;
         if (vkCreateShaderModule(device, &createInfo, nullptr, &shaderModule) != VK_SUCCESS)
         {
-            throw std::runtime_error("failed to create shader module!");
+            throw std::runtime_error("Failed to create shader module!");
         }
 
         return shaderModule;
+    }
+
+    void createRenderPass()
+    {
+        VkAttachmentDescription colorAttachment = {};
+        colorAttachment.format = swapChainImageFormat;
+        colorAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
+        colorAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+        colorAttachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
+        colorAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+        colorAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+        colorAttachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+        colorAttachment.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
+
+        VkAttachmentReference colorAttachmentRef = {};
+        colorAttachmentRef.attachment = 0;
+        colorAttachmentRef.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+
+        VkSubpassDescription subpass = {};
+        subpass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
+        subpass.colorAttachmentCount = 1;
+        subpass.pColorAttachments = &colorAttachmentRef;
+
+        VkRenderPassCreateInfo renderPassInfo = {};
+        renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
+        renderPassInfo.attachmentCount = 1;
+        renderPassInfo.pAttachments = &colorAttachment;
+        renderPassInfo.subpassCount = 1;
+        renderPassInfo.pSubpasses = &subpass;
+
+        if (vkCreateRenderPass(device, &renderPassInfo, nullptr, &renderPass) != VK_SUCCESS)
+        {
+            throw std::runtime_error("Failed to create render pass!");
+        }
     }
 
     // #TODO : Add extension verification support
