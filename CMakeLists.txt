@@ -4,8 +4,11 @@ cmake_minimum_required(VERSION 3.0.0)
 set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
+set(BUILD_SHARED_LIBS ON)
 
 set(GLM_TEST_ENABLE OFF)
+set(GLM_QUIET OFF)
+
 
 option(AUTO_LOCATE_VULKAN "AUTO_LOCATE_VULKAN" ON)
 
@@ -39,19 +42,19 @@ endif()
 project(VulkanCraft)
 
 add_subdirectory(lib/GLFW)
-add_subdirectory(lib/GLM)
+set(GLM_INCLUDE_DIR "lib/GLM/glm")
+include_directories(${GLM_INCLUDE_DIR})
 
 add_executable(${PROJECT_NAME} main.cpp)
 
 target_link_libraries(${PROJECT_NAME} glfw)
-target_link_libraries(${PROJECT_NAME} glm)
 
 if (WIN32)
     target_compile_definitions(${PROJECT_NAME} PRIVATE VK_USE_PLATFORM_WIN32_KHR)
 endif()
 
-target_include_directories(${PROJECT_NAME} PRIVATE Vulkan::Vulkan)
-target_link_libraries(${PROJECT_NAME} Vulkan::Vulkan)
+target_include_directories(${PROJECT_NAME} PUBLIC ${VULKAN_INCLUDE_DIR})
+target_link_libraries(${PROJECT_NAME} ${VULKAN_LIBRARY})
 
 # Define C++ version to be used for building the project
 set_target_properties(${PROJECT_NAME} PROPERTIES 
