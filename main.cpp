@@ -6,7 +6,7 @@
 #include <cstring>
 #include <functional>
 #include <iostream>
-#include <optional>
+#include <experimental/optional>
 #include <set>
 #include <stdexcept>
 #include <vector>
@@ -55,10 +55,18 @@ void DestroyDebugUtilsMessengerEXT(
 
 struct QueueFamilyIndices
 {
-    std::optional<uint32_t> graphicsFamily;
-    std::optional<uint32_t> presentFamily;
+    std::experimental::optional<uint32_t> graphicsFamily;
+    std::experimental::optional<uint32_t> presentFamily;
 
-    bool isComplete() { return graphicsFamily.has_value(); }
+    bool isComplete() {
+        if (graphicsFamily)
+        {
+            return true;
+        } 
+        else {
+            return false;
+        }
+    }
 };
 
 struct SwapChainSupportDetails

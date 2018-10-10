@@ -1,9 +1,0 @@
-[
-{
-  "directory": "C:/Users/sflores/Documents/Scratch/VulkanCraft/build",
-  "command": "C:\\PROGRA~1\\LLVM\\bin\\clang-cl.exe @<<
- /nologo -TP  -IC:\\Users\\sflores\\Documents\\Scratch\\VulkanCraft\\lib\\include\\GLFW    /FoCMakeFiles\\VulkanCraft.dir\\main.cpp.obj /FdCMakeFiles\\VulkanCraft.dir\\ -c C:\\Users\\sflores\\Documents\\Scratch\\VulkanCraft\\main.cpp
-<<",
-  "file": "C:/Users/sflores/Documents/Scratch/VulkanCraft/main.cpp"
-}
-]

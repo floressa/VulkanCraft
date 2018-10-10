@@ -1,1 +1,0 @@
-add_library(GLFW ${CMAKE_SOURCE_DIR}/lib/windows/x64/GLFW/glfw3.lib)
