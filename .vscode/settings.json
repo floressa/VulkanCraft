@@ -3,5 +3,6 @@
         "iosfwd": "cpp",
         "optional": "cpp"
     },
-    "C_Cpp.intelliSenseEngineFallback": "Enabled"
+    "C_Cpp.intelliSenseEngineFallback": "Enabled",
+    "cmake.generator": "Ninja"
 }

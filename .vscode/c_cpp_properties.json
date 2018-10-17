@@ -6,6 +6,7 @@
                 "${workspaceFolder}/**",
                 "${workspaceFolder}/lib/include",
                 "${workspaceFolder}/lib/include/glm",
+                "${workspaceFolder}/lib/stb",
                 "C:/VulkanSDK/1.1.82.1/Include"
             ],
             "defines": [
