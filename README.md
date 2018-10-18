@@ -1,6 +1,6 @@
 # VulkanCraft
 
-A Minecraft clone implemented from scratch using Vulkan.
+A Minecraft clone made using Vulkan.
 
 **- IMPORTANT - Currently the project is only Vulkan/Engine setup. The Minecraft part is very much in the beginning stages.**
 
