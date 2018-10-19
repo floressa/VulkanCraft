@@ -14,6 +14,26 @@
             "cwd": "${workspaceFolder}",
             "environment": [],
             "externalConsole": true,
+        },
+        {
+            "name": "C++ Launch (gdb)",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceRoot}/build/VulkanCraft.exe",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "environment": [],
+            "externalConsole": true,
+            "MIMode": "gdb",
+            "miDebuggerPath": "C:\\mingw\\bin\\gdb.exe",
+            "setupCommands": [
+                {
+                "description": "Enable pretty-printing for gdb",
+                "text": "-enable-pretty-printing",
+                "ignoreFailures": true
+                }
+            ],
         }
     ]
 }
