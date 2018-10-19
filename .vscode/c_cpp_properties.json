@@ -4,9 +4,9 @@
             "name": "Win32",
             "includePath": [
                 "${workspaceFolder}/**",
-                "${workspaceFolder}/lib/include",
-                "${workspaceFolder}/lib/include/glm",
-                "${workspaceFolder}/lib/stb",
+                "${workspaceFolder}/external/glfw/include",
+                "${workspaceFolder}/external/glm/glm",
+                "${workspaceFolder}/external/stb",
                 "C:/VulkanSDK/1.1.82.1/Include"
             ],
             "defines": [
