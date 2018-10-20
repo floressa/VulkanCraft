@@ -10,6 +10,8 @@ General notes taken while making the project
 
 #### Windows
 
+- Easiest build/compile setup for Windows has been using nuwen's MinGW distro and CMake with a Ninja generator
+
 #### Linux
 
 #### MacOS

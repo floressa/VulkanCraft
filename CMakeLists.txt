@@ -14,6 +14,11 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_C_STANDARD 99)
 set(CMAKE_C_STANDARD_REQUIRED ON)
 
+# Static Library Link to make .exe copyable under Windows
+if (WIN32)
+    set(CMAKE_EXE_LINKER_FLAGS -static)
+endif()
+
 # Necessary on Windows
 include_directories("$ENV{VULKAN_SDK}/Include")
 
@@ -44,7 +49,7 @@ set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
 
 # Build GLFW through CMake (Also loads/links Vulkan)
-add_subdirectory(external/GLFW glfw_local)
+add_subdirectory(external/glfw glfw_local)
 
 
 #--------------------------------------------------
