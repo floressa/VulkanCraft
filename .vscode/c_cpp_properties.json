@@ -7,6 +7,7 @@
                 "${workspaceFolder}/external/glfw/include",
                 "${workspaceFolder}/external/glm/glm",
                 "${workspaceFolder}/external/stb",
+                "${workspaceFolder}/external/tinyobjloader",
                 "C:/VulkanSDK/1.1.82.1/Include"
             ],
             "defines": [
