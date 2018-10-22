@@ -40,6 +40,13 @@ include_directories("${PROJECT_BINARY_DIR}")
 # VulkanCraft specific compile options declaration
 option(GNU_COMPILED "Use GNU Compiler" ON)
 
+set(GCC_RELEASE_COMPILE_FLAGS "-O3")
+option(GCC_RELEASE_MODE "Use Vulkan Optimizations" ON)
+
+if (GCC_RELEASE_MODE)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${GCC_RELEASE_COMPILE_FLAGS}")
+endif()
+
 
 #--------------------------------------------------
 # GLFW
@@ -65,6 +72,9 @@ target_include_directories(glm INTERFACE "external/glm")
 add_library(stb INTERFACE)
 target_include_directories(stb INTERFACE "external/stb")
 
+add_library(tinyobjloader INTERFACE)
+target_include_directories(tinyobjloader INTERFACE "external/tinyobjloader")
+
 
 # Executable creation
 add_executable(${PROJECT_NAME} main.cpp)
@@ -73,7 +83,7 @@ add_executable(${PROJECT_NAME} main.cpp)
 #--------------------------------------------------
 # Target Definitions
 #--------------------------------------------------
-target_link_libraries(${PROJECT_NAME} glfw ${VULKAN_LIBRARY} glm stb)
+target_link_libraries(${PROJECT_NAME} glfw ${VULKAN_LIBRARY} glm stb tinyobjloader)
 
 if (WIN32)
     target_compile_definitions(${PROJECT_NAME} PRIVATE VK_USE_PLATFORM_WIN32_KHR)

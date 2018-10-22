@@ -16,11 +16,13 @@
             "externalConsole": true,
         },
         {
-            "name": "C++ Launch (gdb)",
+            "name": "C++ Debug Launch (gdb)",
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceRoot}/build/VulkanCraft.exe",
-            "args": [],
+            "args": [
+                "-g",
+            ],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
             "environment": [],
@@ -34,6 +36,18 @@
                 "ignoreFailures": true
                 }
             ],
+        },
+        {
+            "name": "C++ Release Launch",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceRoot}/build/VulkanCraft.exe",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "environment": [],
+            "externalConsole": true,
+            "setupCommands": [],
         }
     ]
 }
