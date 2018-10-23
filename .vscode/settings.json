@@ -1,7 +1,8 @@
 {
     "files.associations": {
         "iosfwd": "cpp",
-        "optional": "cpp"
+        "optional": "cpp",
+        "iostream": "cpp"
     },
     "C_Cpp.intelliSenseEngineFallback": "Enabled",
     "cmake.generator": "Ninja"

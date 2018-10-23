@@ -4,7 +4,9 @@
             "name": "Win32",
             "includePath": [
                 "${workspaceFolder}/**",
-                "${workspaceFolder}/external/glfw/include",
+                "${workspaceFolder}/include/*",
+                "${workspaceFolder}/src/*",
+                "${workspaceFolder}/external/glfw/include/*",
                 "${workspaceFolder}/external/glm/glm",
                 "${workspaceFolder}/external/stb",
                 "${workspaceFolder}/external/tinyobjloader",
