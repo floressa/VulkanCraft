@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.0.0)
-project(VulkanCraft)
+project(VulkanCraftEngine)
 
 #--------------------------------------------------
 # Define Build options
@@ -38,7 +38,7 @@ configure_file(
 include_directories("${PROJECT_BINARY_DIR}")
 
 # VulkanCraft specific compile options declaration
-option(GNU_COMPILED "Use GNU Compiler" ON)
+option(GNU_COMPILED "Use GNU Compiler" OFF)
 
 set(GCC_RELEASE_COMPILE_FLAGS "-O3")
 option(GCC_RELEASE_MODE "Use Vulkan Optimizations" ON)
@@ -69,6 +69,10 @@ set(GLM_INCLUDE_DIR "external/glm/glm")
 add_library(glm INTERFACE)
 target_include_directories(glm INTERFACE "external/glm")
 
+
+#--------------------------------------------------
+# Header Libraries
+#--------------------------------------------------
 add_library(stb INTERFACE)
 target_include_directories(stb INTERFACE "external/stb")
 
@@ -76,14 +80,23 @@ add_library(tinyobjloader INTERFACE)
 target_include_directories(tinyobjloader INTERFACE "external/tinyobjloader")
 
 
-# Executable creation
-add_executable(${PROJECT_NAME} main.cpp)
-
-
 #--------------------------------------------------
-# Target Definitions
+# VulkanCraft Files
 #--------------------------------------------------
+file(GLOB_RECURSE vce_includes include/*)
+file(GLOB_RECURSE vce_sources src/*)
+set(SOURCE_FILES ${vce_sources} ${vce_includes})
+
+include_directories(include)
+
+# Package source files as library
+add_library(${PROJECT_NAME} ${SOURCE_FILES})
 target_link_libraries(${PROJECT_NAME} glfw ${VULKAN_LIBRARY} glm stb tinyobjloader)
+
+# Executable creation
+add_executable(VulkanCraft main.cpp)
+# Link engine library to executable
+target_link_libraries(VulkanCraft ${PROJECT_NAME})
 
 if (WIN32)
     target_compile_definitions(${PROJECT_NAME} PRIVATE VK_USE_PLATFORM_WIN32_KHR)
