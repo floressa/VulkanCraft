@@ -21,6 +21,7 @@ External libraries are currently loaded in as submodules. You will need to clone
 - [GLFW](https://github.com/glfw/glfw) - Cross-platform window creation
 - [glm](https://github.com/g-truc/glm) - OpenGL Mathematics library (but also with Vulkan!)
 - [stb](https://github.com/nothings/stb) - Multiple utility libraries for use in games. Primarily using [stb_image.h](https://github.com/nothings/stb/blob/master/stb_image.h) for this project
+- [tinyobjloader](https://github.com/syoyo/tinyobjloader) - .obj file loader for loading in model files
 
 ## Notes
 
@@ -29,3 +30,9 @@ General notes taken during the development of this project can be found in [note
 ## License
 
 This project is licensed under the MIT license - see [LICENSE](LICENSE) for details
+
+## Acknowledgements
+
+Resources I used when stuck in various places on this project
+
+- ClemensGerstung's [LowPolyEngine](https://github.com/ClemensGerstung/LowPolyEngine) has a clean, compact CMakeLists.txt that I referenced while making my own
