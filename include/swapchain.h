@@ -16,14 +16,23 @@ class SwapChain
 {
 public:
     void createSwapChain();
-    
-    std::vector<VkImage>& getImages() { return &swapChainImages; }
+    void cleanupSwapChain();
+    void recreateSwapChains();
+
+    void createImageViews();
+    void createFrameBuffers();
+    void createColorResources();
+    void createDepthResources();
+
+    std::vector<VkImage> getImages() { return swapChainImages; }
+
 
 private:
     VkSwapchainKHR swapChain;
-    std::vector<VkImage> swapChainImages;
     VkFormat swapChainImageFormat;
     VkExtent2D swapChainExtent;
+    
+    std::vector<VkImage> swapChainImages;
     std::vector<VkImageView> swapChainImageViews;
     std::vector<VkFramebuffer> swapChainFramebuffers;
 
