@@ -5,6 +5,8 @@
 
 #include <vector>
 
+#include "device.h"
+
 struct SwapChainSupportDetails
 {
     VkSurfaceCapabilitiesKHR capabilities;
@@ -15,9 +17,11 @@ struct SwapChainSupportDetails
 class SwapChain
 {
 public:
+    void init();
+
     void createSwapChain();
     void cleanupSwapChain();
-    void recreateSwapChains();
+    void recreateSwapChain();
 
     void createImageViews();
     void createFrameBuffers();
@@ -28,6 +32,8 @@ public:
 
 
 private:
+    Device* device;
+
     VkSwapchainKHR swapChain;
     VkFormat swapChainImageFormat;
     VkExtent2D swapChainExtent;
@@ -35,6 +41,22 @@ private:
     std::vector<VkImage> swapChainImages;
     std::vector<VkImageView> swapChainImageViews;
     std::vector<VkFramebuffer> swapChainFramebuffers;
+
+    VkPipeline graphicsPipeline;
+    VkRenderPass renderPass;
+    VkPipelineLayout pipelineLayout;
+
+    VkImage textureImage;
+    VkDeviceMemory textureImageMemory;
+    VkImageView textureImageView;
+
+    VkImage depthImage;
+    VkDeviceMemory depthImageMemory;
+    VkImageView depthImageView;
+
+    VkImage colorImage;
+    VkDeviceMemory colorImageMemory;
+    VkImageView colorImageView;
 
 
     SwapChainSupportDetails querySwapChainSupport(VkPhysicalDevice device);

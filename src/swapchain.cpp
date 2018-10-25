@@ -1,14 +1,20 @@
 #include "swapchain.h"
+#include "queuefamily.h"
 
 #include <GLFW/glfw3.h>
 
 #include <cstdlib>
 #include <functional>
 
+void SwapChain::init()
+{
+    createSwapChain();
+    createImageViews();
+}
 
 void SwapChain::createSwapChain()
 {
-    SwapChainSupportDetails swapChainSupport = querySwapChainSupport(physicalDevice);
+    SwapChainSupportDetails swapChainSupport = querySwapChainSupport(device->getPhysicalDevice());
 
     VkSurfaceFormatKHR surfaceFormat = chooseSwapSurfaceFormat(swapChainSupport.formats);
     VkPresentModeKHR presentMode = chooseSwapPresentMode(swapChainSupport.presentModes);
@@ -30,7 +36,7 @@ void SwapChain::createSwapChain()
     createInfo.imageArrayLayers = 1;
     createInfo.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
 
-    QueueFamilyIndices indices = findQueueFamilies(physicalDevice);
+    QueueFamilyIndices indices = device->findQueueFamilies();
     uint32_t queueFamilyIndices[] =
     {
         indices.graphicsFamily.value(), indices.presentFamily.value()
@@ -55,14 +61,14 @@ void SwapChain::createSwapChain()
     createInfo.clipped = VK_TRUE;
     createInfo.oldSwapchain = VK_NULL_HANDLE;
 
-    if (vkCreateSwapchainKHR(device, &createInfo, nullptr, &swapChain) != VK_SUCCESS)
+    if (vkCreateSwapchainKHR(device->getLogicalDevice(), &createInfo, nullptr, &swapChain) != VK_SUCCESS)
     {
         throw std::runtime_error("failed to create swap chain!");
     }
 
-    vkGetSwapchainImagesKHR(device, swapChain, &imageCount, nullptr);
+    vkGetSwapchainImagesKHR(device->getLogicalDevice(), swapChain, &imageCount, nullptr);
     swapChainImages.resize(imageCount);
-    vkGetSwapchainImagesKHR(device, swapChain, &imageCount, swapChainImages.data());
+    vkGetSwapchainImagesKHR(device->getLogicalDevice(), swapChain, &imageCount, swapChainImages.data());
 
     swapChainImageFormat = surfaceFormat.format;
     swapChainExtent = extent;
@@ -70,29 +76,29 @@ void SwapChain::createSwapChain()
 
 void SwapChain::cleanupSwapChain()
 {
-    vkDestroyImageView(device, colorImageView, nullptr);
-    vkDestroyImage(device, colorImage, nullptr);
-    vkFreeMemory(device, colorImageMemory, nullptr);
+    vkDestroyImageView(device->getLogicalDevice(), colorImageView, nullptr);
+    vkDestroyImage(device->getLogicalDevice(), colorImage, nullptr);
+    vkFreeMemory(device->getLogicalDevice(), colorImageMemory, nullptr);
 
-    vkDestroyImageView(device, depthImageView, nullptr);
-    vkDestroyImage(device, depthImage, nullptr);
-    vkFreeMemory(device, depthImageMemory, nullptr);
+    vkDestroyImageView(device->getLogicalDevice(), depthImageView, nullptr);
+    vkDestroyImage(device->getLogicalDevice(), depthImage, nullptr);
+    vkFreeMemory(device->getLogicalDevice(), depthImageMemory, nullptr);
     
     for (auto framebuffer : swapChainFramebuffers)
     {
-        vkDestroyFramebuffer(device, framebuffer, nullptr);
+        vkDestroyFramebuffer(device->getLogicalDevice(), framebuffer, nullptr);
     }
 
-    vkDestroyPipeline(device, graphicsPipeline, nullptr);
-    vkDestroyPipelineLayout(device, pipelineLayout, nullptr);
-    vkDestroyRenderPass(device, renderPass, nullptr);
+    vkDestroyPipeline(device->getLogicalDevice(), graphicsPipeline, nullptr);
+    vkDestroyPipelineLayout(device->getLogicalDevice(), pipelineLayout, nullptr);
+    vkDestroyRenderPass(device->getLogicalDevice(), renderPass, nullptr);
 
     for (auto imageView : swapChainImageViews)
     {
-        vkDestroyImageView(device, imageView, nullptr);
+        vkDestroyImageView(device->getLogicalDevice(), imageView, nullptr);
     }
 
-    vkDestroySwapchainKHR(device, swapChain, nullptr);
+    vkDestroySwapchainKHR(device->getLogicalDevice(), swapChain, nullptr);
 }
 
 // Recreates the swap chain, used in handling situations where the window surface
@@ -106,19 +112,26 @@ void SwapChain::recreateSwapChain()
         glfwWaitEvents();
     }
 
-    vkDeviceWaitIdle(device);
+    vkDeviceWaitIdle(device->getLogicalDevice());
 
     cleanupSwapChain();
 
     createSwapChain();
 
     // The following components are based on the swap chain images and must be recreated
+    // Swapchain.h
     createImageViews();
+
+    // Renderer.h
     createRenderPass();
     createGraphicsPipeline();
+
+    // Swapchain.h
     createColorResources();
     createDepthResources();
     createFramebuffers();
+
+    // ! Application.h
     createCommandBuffers();
 }
 

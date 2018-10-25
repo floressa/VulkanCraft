@@ -1,5 +1,9 @@
 #include "application.h"
 
+#include <stdexcept>
+
+#include "callbacks.h"
+
 VkResult CreateDebugUtilsMessengerEXT(
     VkInstance instance,
     const VkDebugUtilsMessengerCreateInfoEXT* pCreateInfo,
@@ -37,33 +41,63 @@ void Application::run()
     cleanup();
 }
 
+void Application::initWindow()
+{
+    glfwInit();
+
+    glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
+
+    window = glfwCreateWindow(WIDTH, HEIGHT, "Vulkan", nullptr, nullptr);
+    glfwSetWindowUserPointer(window, this);
+    glfwSetFramebufferSizeCallback(window, framebufferResizeCallback);
+}
+
 void Application::initVulkan()
 {
     createInstance();
     setupDebugCallback();
     createSurface();
-    pickPhysicalDevice();
-    createLogicalDevice();
 
-    createSwapChain();
-    
-    createImageViews();
+    // Device.h
+    // pickPhysicalDevice();
+    // createLogicalDevice();
+    device.init(instance);
+
+    // Swapchain.h
+    // createSwapChain();
+    // createImageViews();
+    swapChain.init();
+
+    // Renderer.h
     createRenderPass();
     createDescriptorSetLayout();
     createGraphicsPipeline();
+
+    // Command.h
     createCommandPool();
+
+    // Swapchain.h
     createColorResources();
     createDepthResources();
-    createFramebuffers();
+
+    createFramebuffers(); // Needs renderer
+
+    // Device.h
     createTextureImage();
     createTextureImageView();
     createTextureSampler();
+
+    // temp function Model.h?
     loadModel();
+
+    // Renderer.h
     createVertexBuffer();
     createIndexBuffer();
     createUniformBuffer();
     createDescriptorPool();
     createDescriptorSets();
+
+    // Application
     createCommandBuffers();
     createSyncObjects();
 }
@@ -135,17 +169,6 @@ void Application::mainLoop()
     vkDeviceWaitIdle(device);
 }
 
-void Application::initWindow()
-{
-    glfwInit();
-
-    glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-
-    window = glfwCreateWindow(WIDTH, HEIGHT, "Vulkan", nullptr, nullptr);
-    glfwSetWindowUserPointer(window, this);
-    glfwSetFramebufferSizeCallback(window, framebufferResizeCallback);
-}
-
 void Application::createInstance()
 {
     if (enableValidationLayers && !checkValidationLayerSupport())
@@ -213,32 +236,11 @@ void Application::setupDebugCallback()
     }
 }
 
-void Application::pickPhysicalDevice()
+void Application::createSurface()
 {
-    uint32_t deviceCount = 0;
-    vkEnumeratePhysicalDevices(instance, &deviceCount, nullptr);
-
-    if (deviceCount == 0)
+    if (glfwCreateWindowSurface(instance, window, nullptr, &surface) != VK_SUCCESS)
     {
-        throw std::runtime_error("failed to find GPUs with Vulkan support!");
-    }
-
-    std::vector<VkPhysicalDevice> devices(deviceCount);
-    vkEnumeratePhysicalDevices(instance, &deviceCount, devices.data());
-
-    for (const auto& device : devices)
-    {
-        if (isDeviceSuitable(device))
-        {
-            physicalDevice = device;
-            msaaSamples = getMaxUsableSampleCount();
-            break;
-        }
-    }
-
-    if (physicalDevice == VK_NULL_HANDLE)
-    {
-        throw std::runtime_error("failed to find a suitable GPU!");
+        throw std::runtime_error("failed to create window surface!");
     }
 }
 

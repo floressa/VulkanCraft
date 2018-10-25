@@ -5,8 +5,6 @@
 
 class Texture
 {
-private:
-    /* data */
 public:
     Texture(/* args */) { }
     ~Texture() { }
@@ -16,6 +14,12 @@ public:
         VkSampleCountFlagBits numSamples, VkFormat format, VkImageTiling tiling,
         VkImageUsageFlags usage, VkMemoryPropertyFlags properties, VkImage& image,
         VkDeviceMemory& imageMemory);
+
+    void generateMipMaps(VkImage image, VkFormat imageFormat, int32_t texWidth,
+        int32_t texHeight, uint32_t mipLevels);
+
+private:
+    /* data */
 };
 
 #endif
