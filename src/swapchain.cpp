@@ -122,10 +122,10 @@ void SwapChain::recreateSwapChain()
     // Renderer.h
     createRenderPass();
     createGraphicsPipeline();
-
-    // Swapchain.h
     createColorResources();
     createDepthResources();
+
+    // Swapchain.h
     createFramebuffers();
 
     // ! Application.h
