@@ -63,26 +63,23 @@ void Application::initVulkan()
     // createLogicalDevice();
     device.init(instance);
 
-    // Swapchain.h
+    // Command.h
+    commandPool.init();
+    
+    // ! Renderer.h
     // createSwapChain();
     // createImageViews();
-    swapChain.init();
+
+    // createRenderPass();
+    // createDescriptorSetLayout();
+    // createGraphicsPipeline();
+    // createColorResources();
+    // createDepthResources();
+    // swapChain.createFramebuffers(); // Needs renderer
+    renderer.init();
+    
 
     // Renderer.h
-    createRenderPass();
-    createDescriptorSetLayout();
-    createGraphicsPipeline();
-
-    // Command.h
-    createCommandPool();
-
-    // Swapchain.h
-    createColorResources();
-    createDepthResources();
-
-    createFramebuffers(); // Needs renderer
-
-    // Device.h
     createTextureImage();
     createTextureImageView();
     createTextureSampler();
@@ -94,6 +91,7 @@ void Application::initVulkan()
     createVertexBuffer();
     createIndexBuffer();
     createUniformBuffer();
+
     createDescriptorPool();
     createDescriptorSets();
 
@@ -105,7 +103,7 @@ void Application::initVulkan()
 void Application::cleanup()
 {
     // Device cleanup
-    cleanupSwapChain();
+    swapChain.cleanup();
 
     vkDestroySampler(device, textureSampler, nullptr);
     vkDestroyImageView(device, textureImageView, nullptr);
@@ -212,6 +210,14 @@ void Application::createInstance()
     verifyExtensions();
 }
 
+void Application::createSurface()
+{
+    if (glfwCreateWindowSurface(instance, window, nullptr, &surface) != VK_SUCCESS)
+    {
+        throw std::runtime_error("failed to create window surface!");
+    }
+}
+
 void Application::setupDebugCallback()
 {
     if (!enableValidationLayers)
@@ -233,14 +239,6 @@ void Application::setupDebugCallback()
     if (CreateDebugUtilsMessengerEXT(instance, &createInfo, nullptr, &callback) != VK_SUCCESS)
     {
         throw std::runtime_error("failed to set up debug callback!");
-    }
-}
-
-void Application::createSurface()
-{
-    if (glfwCreateWindowSurface(instance, window, nullptr, &surface) != VK_SUCCESS)
-    {
-        throw std::runtime_error("failed to create window surface!");
     }
 }
 
@@ -333,67 +331,4 @@ std::vector<const char*> Application::getRequiredExtensions()
     }
 
     return extensions;
-}
-
-void Application::createCommandBuffers()
-{
-    commandBuffers.resize(swapChainFramebuffers.size());
-
-    VkCommandBufferAllocateInfo allocInfo = {};
-    allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
-    allocInfo.commandPool = commandPool;
-    allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
-    allocInfo.commandBufferCount = (uint32_t) commandBuffers.size();
-
-    if (vkAllocateCommandBuffers(device, &allocInfo, commandBuffers.data()) != VK_SUCCESS)
-    {
-        throw std::runtime_error("Failed to allocate command buffers!");
-    }
-
-    for (size_t i = 0; i < commandBuffers.size(); i++)
-    {
-        VkCommandBufferBeginInfo beginInfo = {};
-        beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-        beginInfo.flags = VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT;
-        beginInfo.pInheritanceInfo = nullptr; // Optional
-
-        if (vkBeginCommandBuffer(commandBuffers[i], &beginInfo) != VK_SUCCESS)
-        {
-            throw std::runtime_error("Failed to begin recording command buffer!");
-        }
-
-        VkRenderPassBeginInfo renderPassInfo = {};
-        renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-        renderPassInfo.renderPass = renderPass;
-        renderPassInfo.framebuffer = swapChainFramebuffers[i];
-        renderPassInfo.renderArea.offset = {0, 0};
-        renderPassInfo.renderArea.extent = swapChainExtent;
-        
-        std::array<VkClearValue, 2> clearValues = {};
-        clearValues[0].color = {0.0f, 0.0f, 0.0f, 1.0f};
-        clearValues[1].depthStencil = {1.0f, 0};
-
-        renderPassInfo.clearValueCount = static_cast<uint32_t>(clearValues.size());
-        renderPassInfo.pClearValues = clearValues.data();
-
-        vkCmdBeginRenderPass(commandBuffers[i], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
-        vkCmdBindPipeline(commandBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline);
-        
-        VkBuffer vertexBuffers[] = {vertexBuffer};
-        VkDeviceSize offsets[] = {0};
-        vkCmdBindVertexBuffers(commandBuffers[i], 0, 1, vertexBuffers, offsets);
-        vkCmdBindIndexBuffer(commandBuffers[i], indexBuffer, 0, VK_INDEX_TYPE_UINT32);
-
-        vkCmdBindDescriptorSets(commandBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS,
-            pipelineLayout, 0, 1, &descriptorSets[i], 0, nullptr);
-
-        vkCmdDrawIndexed(commandBuffers[i], static_cast<uint32_t>(indices.size()), 1, 0, 0, 0);
-
-        vkCmdEndRenderPass(commandBuffers[i]);
-
-        if (vkEndCommandBuffer(commandBuffers[i]) != VK_SUCCESS)
-        {
-            throw std::runtime_error("Failed to record command buffer!");
-        }
-    }
 }

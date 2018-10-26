@@ -20,20 +20,34 @@ public:
     VkPhysicalDevice& getPhysicalDevice() { return &physicalDevice; }
     VkDevice& getLogicalDevice() { return &device; }
 
-    void createTextureSampler();
+    QueueFamilyIndices findQueueFamilies();
+
+    VkFormat findSupportedFormat(const std::vector<VkFormat>& candidates,
+        VkImageTiling tiling, VkFormatFeatureFlags features);
+   
+
+    void createImage(uint32_t width, uint32_t height, uint32_t mipLevels,
+        VkSampleCountFlagBits numSamples, VkFormat format, VkImageTiling tiling,
+        VkImageUsageFlags usage, VkMemoryPropertyFlags properties, VkImage& image,
+        VkDeviceMemory& imageMemory);
+    
+    void transitionImageLayout(VkImage image, VkFormat format,
+        VkImageLayout oldLayout, VkImageLayout newLayout, uint32_t mipLevels);
 
     VkImageView createImageView(VkImage image, VkFormat format,
         VkImageAspectFlags aspectFlags, uint32_t mipLevels);
     
-    // ! May need to move this, not sure where to put textureImageView yet
-    void createTextureImageView();
 
-    QueueFamilyIndices findQueueFamilies();
+    void createBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties,
+        VkBuffer& buffer, VkDeviceMemory& bufferMemory);
+
+    void copyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size);
+    void copyBufferToImage(VkBuffer buffer, VkImage image, uint32_t width, uint32_t height);
 
     VkSampleCountFlagBits getMaxUsableSampleCount();
+    VkQueue getPresentQueue() { return presentQueue; }
+    VkQueue getGraphicsQueue() { return graphicsQueue; }
 
-    void transitionImageLayout(VkImage image, VkFormat format,
-        VkImageLayout oldLayout, VkImageLayout newLayout, uint32_t mipLevels);
 
 private:
     VkPhysicalDevice physicalDevice = VK_NULL_HANDLE;
@@ -49,18 +63,8 @@ private:
 
     uint32_t findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties);
 
-    void createBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties,
-        VkBuffer& buffer, VkDeviceMemory& bufferMemory);
-
-    void copyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size);
-
-    void copyBufferToImage(VkBuffer buffer, VkImage image, uint32_t width, uint32_t height);
-
     // ! Temporarily a helper function, will see if necessary to remain as such
     QueueFamilyIndices findQueueFamiliesHelper(VkPhysicalDevice device);
-
-    VkFormat findSupportedFormat(const std::vector<VkFormat>& candidates,
-        VkImageTiling tiling, VkFormatFeatureFlags features);
     
     // ! May need to move this
     bool hasStencilComponent(VkFormat format);

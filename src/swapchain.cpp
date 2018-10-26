@@ -61,20 +61,20 @@ void SwapChain::createSwapChain()
     createInfo.clipped = VK_TRUE;
     createInfo.oldSwapchain = VK_NULL_HANDLE;
 
-    if (vkCreateSwapchainKHR(device->getLogicalDevice(), &createInfo, nullptr, &swapChain) != VK_SUCCESS)
+    if (vkCreateSwapchainKHR(device->getLogicalDevice(), &createInfo, nullptr, &swapChainKHR) != VK_SUCCESS)
     {
         throw std::runtime_error("failed to create swap chain!");
     }
 
-    vkGetSwapchainImagesKHR(device->getLogicalDevice(), swapChain, &imageCount, nullptr);
+    vkGetSwapchainImagesKHR(device->getLogicalDevice(), swapChainKHR, &imageCount, nullptr);
     swapChainImages.resize(imageCount);
-    vkGetSwapchainImagesKHR(device->getLogicalDevice(), swapChain, &imageCount, swapChainImages.data());
+    vkGetSwapchainImagesKHR(device->getLogicalDevice(), swapChainKHR, &imageCount, swapChainImages.data());
 
     swapChainImageFormat = surfaceFormat.format;
     swapChainExtent = extent;
 }
 
-void SwapChain::cleanupSwapChain()
+void SwapChain::cleanup()
 {
     vkDestroyImageView(device->getLogicalDevice(), colorImageView, nullptr);
     vkDestroyImage(device->getLogicalDevice(), colorImage, nullptr);
@@ -98,11 +98,9 @@ void SwapChain::cleanupSwapChain()
         vkDestroyImageView(device->getLogicalDevice(), imageView, nullptr);
     }
 
-    vkDestroySwapchainKHR(device->getLogicalDevice(), swapChain, nullptr);
+    vkDestroySwapchainKHR(device->getLogicalDevice(), swapChainKHR, nullptr);
 }
 
-// Recreates the swap chain, used in handling situations where the window surface
-// changes, such as a window resize event
 void SwapChain::recreateSwapChain()
 {
     int width = 0, height = 0;
@@ -114,8 +112,7 @@ void SwapChain::recreateSwapChain()
 
     vkDeviceWaitIdle(device->getLogicalDevice());
 
-    cleanupSwapChain();
-
+    cleanup();
     createSwapChain();
 
     // The following components are based on the swap chain images and must be recreated
@@ -133,6 +130,51 @@ void SwapChain::recreateSwapChain()
 
     // ! Application.h
     createCommandBuffers();
+}
+
+void SwapChain::createImageViews()
+{
+    swapChainImageViews.resize(swapChainImages.size());
+
+    for (uint32_t i = 0; i < swapChainImages.size(); i++)
+    {
+        swapChainImageViews[i] = createImageView(
+            swapChainImages[i],
+            swapChainImageFormat,
+            VK_IMAGE_ASPECT_COLOR_BIT,
+            1
+        );
+    }
+}
+
+void SwapChain::createFramebuffers()
+{
+    swapChainFramebuffers.resize(swapChainImageViews.size());
+
+    for (size_t i = 0; i < swapChainImageViews.size(); i++)
+    {
+        std::array<VkImageView, 3> attachments =
+        {
+            colorImageView,
+            depthImageView,
+            swapChainImageViews[i]
+        };
+
+        VkFramebufferCreateInfo framebufferInfo = {};
+        framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
+        framebufferInfo.renderPass = renderPass;
+        framebufferInfo.attachmentCount = static_cast<uint32_t>(attachments.size());
+        framebufferInfo.pAttachments = attachments.data();
+        framebufferInfo.width = swapChainExtent.width;
+        framebufferInfo.height = swapChainExtent.height;
+        framebufferInfo.layers = 1;
+
+        if (vkCreateFramebuffer(
+            device, &framebufferInfo, nullptr, &swapChainFramebuffers[i]) != VK_SUCCESS)
+        {
+            throw std::runtime_error("Failed to create framebuffer!");
+        }
+    }
 }
 
 SwapChainSupportDetails SwapChain::querySwapChainSupport(VkPhysicalDevice device)
@@ -230,86 +272,4 @@ VkExtent2D SwapChain::chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilit
 
         return actualExtent;
     }
-}
-
-void SwapChain::createImageViews()
-{
-    swapChainImageViews.resize(swapChainImages.size());
-
-    for (uint32_t i = 0; i < swapChainImages.size(); i++)
-    {
-        swapChainImageViews[i] = createImageView(
-            swapChainImages[i],
-            swapChainImageFormat,
-            VK_IMAGE_ASPECT_COLOR_BIT,
-            1
-        );
-    }
-}
-
-void SwapChain::createFramebuffers()
-{
-    swapChainFramebuffers.resize(swapChainImageViews.size());
-
-    for (size_t i = 0; i < swapChainImageViews.size(); i++)
-    {
-        std::array<VkImageView, 3> attachments =
-        {
-            colorImageView,
-            depthImageView,
-            swapChainImageViews[i]
-        };
-
-        VkFramebufferCreateInfo framebufferInfo = {};
-        framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
-        framebufferInfo.renderPass = renderPass;
-        framebufferInfo.attachmentCount = static_cast<uint32_t>(attachments.size());
-        framebufferInfo.pAttachments = attachments.data();
-        framebufferInfo.width = swapChainExtent.width;
-        framebufferInfo.height = swapChainExtent.height;
-        framebufferInfo.layers = 1;
-
-        if (vkCreateFramebuffer(
-            device, &framebufferInfo, nullptr, &swapChainFramebuffers[i]) != VK_SUCCESS)
-        {
-            throw std::runtime_error("Failed to create framebuffer!");
-        }
-    }
-}
-
-void SwapChain::createColorResources()
-{
-    VkFormat colorFormat = swapChainImageFormat;
-
-    createImage(
-        swapChainExtent.width, swapChainExtent.height, 1,
-        msaaSamples, colorFormat, VK_IMAGE_TILING_OPTIMAL,
-        VK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT | VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,
-        VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, colorImage, colorImageMemory
-    );
-
-    colorImageView = createImageView(colorImage, colorFormat, VK_IMAGE_ASPECT_COLOR_BIT, 1);
-
-    transitionImageLayout(
-        colorImage, colorFormat, VK_IMAGE_LAYOUT_UNDEFINED,
-        VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, 1
-    );
-}
-
-void SwapChain::createDepthResources()
-{
-    VkFormat depthFormat = findDepthFormat();
-
-    createImage(
-        swapChainExtent.width, swapChainExtent.height, 1,
-        msaaSamples, depthFormat, VK_IMAGE_TILING_OPTIMAL,
-        VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT,
-        VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
-        depthImage, depthImageMemory
-    );
-
-    depthImageView = createImageView(depthImage, depthFormat, VK_IMAGE_ASPECT_DEPTH_BIT, 1);
-
-    transitionImageLayout(depthImage, depthFormat, VK_IMAGE_LAYOUT_UNDEFINED,
-        VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL, 1);      
 }

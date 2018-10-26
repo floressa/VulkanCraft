@@ -8,6 +8,8 @@
 
 #include "swapchain.h"
 #include "device.h"
+#include "renderer.h"
+#include "commandPool.h"
 
 
 const int WIDTH = 800;
@@ -24,7 +26,7 @@ public:
     void run();
 
 private:
-    // ! May want to create Window class
+    // ! May want to create separate Window class
     GLFWwindow* window;
     
     VkInstance instance;
@@ -32,42 +34,17 @@ private:
     VkSurfaceKHR surface;
     
     Device device;
-
-    SwapChain swapChain;
-
-    VkCommandPool commandPool;
-    std::vector<VkCommandBuffer> commandBuffers;
-
-    std::vector<VkSemaphore> imageAvailableSemaphores;
-    std::vector<VkSemaphore> renderFinishedSemaphores;
-    std::vector<VkFence> inFlightFences;
-
-    size_t currentFrame = 0;
+    Renderer renderer;
+    CommandPool commandPool;
 
     bool framebufferResized = false;
 
-    VkBuffer vertexBuffer;
-    VkDeviceMemory vertexBufferMemory;
 
-    VkBuffer indexBuffer;
-    VkDeviceMemory indexBufferMemory;
-
-    uint32_t mipLevels;
-    VkSampler textureSampler;
-
-
-
-    static void framebufferResizeCallback(GLFWwindow* window, int width, int height)
-    {
-        auto app = reinterpret_cast<Application*>(glfwGetWindowUserPointer(window));
-        app->framebufferResized = true;
-    }
-
+    void initWindow();
     void initVulkan();
     void cleanup();
     void mainLoop();
     void createInstance();
-    void initWindow();
     void createSurface();
     void setupDebugCallback();
 
@@ -76,9 +53,11 @@ private:
     bool checkValidationLayerSupport();
     std::vector<const char*> getRequiredExtensions();
 
-    // ! May need to move
-    void createCommandBuffers();
-
+    static void framebufferResizeCallback(GLFWwindow* window, int width, int height)
+    {
+        auto app = reinterpret_cast<Application*>(glfwGetWindowUserPointer(window));
+        app->framebufferResized = true;
+    }
 };
 
 #endif

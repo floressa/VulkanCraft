@@ -20,21 +20,22 @@ public:
     void init();
 
     void createSwapChain();
-    void cleanupSwapChain();
+    void cleanup();
+
+    // Recreates the swap chain, used in handling situations where the window surface
+    // changes, such as a window resize event
     void recreateSwapChain();
 
-    void createImageViews();
-    void createFrameBuffers();
-    void createColorResources();
-    void createDepthResources();
-
+    VkSwapchainKHR getKHR() { return swapChainKHR; }
     std::vector<VkImage> getImages() { return swapChainImages; }
-
+    uint32_t getImageCount() { return swapChainImages.size(); }
+    VkFormat getImageFormat() { return swapChainImageFormat; }
+    VkExtent2D getExtent() { return swapChainExtent; }
 
 private:
     Device* device;
 
-    VkSwapchainKHR swapChain;
+    VkSwapchainKHR swapChainKHR;
     VkFormat swapChainImageFormat;
     VkExtent2D swapChainExtent;
     
@@ -42,22 +43,8 @@ private:
     std::vector<VkImageView> swapChainImageViews;
     std::vector<VkFramebuffer> swapChainFramebuffers;
 
-    VkPipeline graphicsPipeline;
-    VkRenderPass renderPass;
-    VkPipelineLayout pipelineLayout;
-
-    VkImage textureImage;
-    VkDeviceMemory textureImageMemory;
-    VkImageView textureImageView;
-
-    VkImage depthImage;
-    VkDeviceMemory depthImageMemory;
-    VkImageView depthImageView;
-
-    VkImage colorImage;
-    VkDeviceMemory colorImageMemory;
-    VkImageView colorImageView;
-
+    void createImageViews();
+    void createFrameBuffers();
 
     SwapChainSupportDetails querySwapChainSupport(VkPhysicalDevice device);
     VkSurfaceFormatKHR chooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats);
