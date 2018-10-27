@@ -67,20 +67,22 @@ void Application::initVulkan()
 
     // Command.h
     commandPool.init();
-    
+
     // ! Renderer.h
+    // createDescriptorSetLayout();
+    renderer.init();
+    
+    // ! SwapChain.h
     // createSwapChain();
     // createImageViews();
     // createRenderPass();
-
-    // createDescriptorSetLayout();
     // createGraphicsPipeline();
     // createColorResources();
     // createDepthResources();
     // createFramebuffers(); // Needs renderer
-    renderer.init();
 
-    // Renderer.h
+
+    // ! Renderer.h
     createTextureImage();
     createTextureImageView();
     createTextureSampler();
