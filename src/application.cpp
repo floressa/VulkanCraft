@@ -57,10 +57,12 @@ void Application::initVulkan()
     createInstance();
     setupDebugCallback();
     createSurface();
+    createSyncObjects();
 
     // Device.h
     // pickPhysicalDevice();
     // createLogicalDevice();
+    // ! Need to dynamically instantiate device, should probably handle init in device constructor
     device.init(instance);
 
     // Command.h
@@ -69,15 +71,14 @@ void Application::initVulkan()
     // ! Renderer.h
     // createSwapChain();
     // createImageViews();
-
     // createRenderPass();
+
     // createDescriptorSetLayout();
     // createGraphicsPipeline();
     // createColorResources();
     // createDepthResources();
-    // swapChain.createFramebuffers(); // Needs renderer
+    // createFramebuffers(); // Needs renderer
     renderer.init();
-    
 
     // Renderer.h
     createTextureImage();
@@ -87,7 +88,8 @@ void Application::initVulkan()
     // temp function Model.h?
     loadModel();
 
-    // Renderer.h
+    // ! Renderer.h
+    // * Buffer Creation - Post geo load functions
     createVertexBuffer();
     createIndexBuffer();
     createUniformBuffer();
@@ -95,9 +97,8 @@ void Application::initVulkan()
     createDescriptorPool();
     createDescriptorSets();
 
-    // Application
+    // Application - requires geo buffers
     createCommandBuffers();
-    createSyncObjects();
 }
 
 void Application::cleanup()

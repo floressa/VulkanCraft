@@ -31,9 +31,16 @@ public:
     uint32_t getImageCount() { return swapChainImages.size(); }
     VkFormat getImageFormat() { return swapChainImageFormat; }
     VkExtent2D getExtent() { return swapChainExtent; }
+    void createFrameBuffers();
+    VkFormat findDepthFormat();
+
+    // TODO: Separate shader interaction into class
+    VkShaderModule createShaderModule(const std::vector<char>& code);
 
 private:
     Device* device;
+
+    VkSampleCountFlagBits msaaSamples = VK_SAMPLE_COUNT_1_BIT;
 
     VkSwapchainKHR swapChainKHR;
     VkFormat swapChainImageFormat;
@@ -43,8 +50,23 @@ private:
     std::vector<VkImageView> swapChainImageViews;
     std::vector<VkFramebuffer> swapChainFramebuffers;
 
+    VkRenderPass renderPass;
+    VkPipelineLayout pipelineLayout;
+    VkPipeline graphicsPipeline;
+
+    VkImage depthImage;
+    VkDeviceMemory depthImageMemory;
+    VkImageView depthImageView;
+
+    VkImage colorImage;
+    VkDeviceMemory colorImageMemory;
+    VkImageView colorImageView;
+
     void createImageViews();
-    void createFrameBuffers();
+    void createColorResources();
+    void createDepthResources();
+    void createGraphicsPipeline();
+    void createRenderPass();
 
     SwapChainSupportDetails querySwapChainSupport(VkPhysicalDevice device);
     VkSurfaceFormatKHR chooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats);

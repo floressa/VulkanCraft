@@ -26,7 +26,6 @@ public:
     void init();
 
     void drawFrame();
-    VkShaderModule createShaderModule(const std::vector<char>& code);
 
 private:
     Device* device;
@@ -41,10 +40,6 @@ private:
     VkBuffer indexBuffer;
     VkDeviceMemory indexBufferMemory;
 
-    VkRenderPass renderPass;
-    VkPipelineLayout pipelineLayout;
-    VkPipeline graphicsPipeline;
-
     VkDescriptorSetLayout descriptorSetLayout;
     std::vector<VkDescriptorSet> descriptorSets;
     VkDescriptorPool descriptorPool;
@@ -57,15 +52,6 @@ private:
     VkDeviceMemory textureImageMemory;
     VkImageView textureImageView;
 
-    VkImage depthImage;
-    VkDeviceMemory depthImageMemory;
-    VkImageView depthImageView;
-
-    VkImage colorImage;
-    VkDeviceMemory colorImageMemory;
-    VkImageView colorImageView;
-
-    VkSampleCountFlagBits msaaSamples = VK_SAMPLE_COUNT_1_BIT;
     uint32_t mipLevels;
 
     size_t currentFrame = 0;
@@ -75,11 +61,6 @@ private:
     std::vector<VkFence> inFlightFences;
 
 
-    void createGraphicsPipeline(VkExtent2D swapChainExtent);
-    void createColorResources(VkFormat colorFormat, VkExtent2D swapChainExtent);
-    void createDepthResources(VkFormat depthFormat, VkExtent2D swapChainExtent);
-    void createRenderPass(VkFormat swapChainImageFormat);
-
     // ! Moved from Application, still might not be the right place
     void createDescriptorSetLayout();
     void createDescriptorSets();
@@ -88,15 +69,14 @@ private:
     // ! Might need to go in device.h instead
     void createVertexBuffer();
     void createIndexBuffer();
+    void createUniformBuffers();
+    void updateUniformBuffer(uint32_t currentImage);
 
     void createTextureImageView();
     
-    // Texture samplers might not be necessary for this project but I will
-    // add the structure needed to use them in Vulkan anyways for now
+    // ! Texture samplers might not be necessary for this project but I will
+    // ! add the structure needed to use them in Vulkan anyways for now
     void createTextureSampler();
-
-    void createUniformBuffer();
-    void updateUniformBuffer(uint32_t currentImage);
 
     VkFormat findDepthFormat();
 };
