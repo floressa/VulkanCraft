@@ -26,6 +26,7 @@ matrix:
             #- clang-6.0
             - valgrind
             - xorg-dev
+            - lunarg-vulkan-sdk
           sources: &precise_latest_boost_sources
             - ubuntu-toolchain-r-test
             #- llvm-toolchain-trusty-6.0
@@ -43,10 +44,10 @@ install:
   - ${CXX} --version
   - ${CXX} -v
   - sudo pip install codecov
-  - mkdir -p ${DEPS_DIR}/vulkan
-  - wget -O - "https://vulkan.lunarg.com/sdk/home#sdk/downloadConfirm/1.1.85.0/linux/vulkansdk-linux-x86_64-1.1.85.0.tar.gz" | tar -xz -C ${DEPS_DIR}/vulkan
+  #mkdir -p ${DEPS_DIR}/vulkan
+  #- wget -O - "https://vulkan.lunarg.com/sdk/home#sdk/downloadConfirm/1.1.85.0/linux/vulkansdk-linux-x86_64-1.1.85.0.tar.gz" | tar -xz -C ${DEPS_DIR}/vulkan
   #- export PATH=${DEPS_DIR}/vulkan:${PATH}
-  - ls ${DEPS_DIR}/vulkan
+  #- ls ${DEPS_DIR}/vulkan
 
   # Download and install recent cmake
   - |
