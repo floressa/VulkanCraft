@@ -23,7 +23,7 @@ matrix:
           packages: &precise_latest_boost_packages
             - gcc-8
             - g++-8
-            - clang-6
+            - clang-6.0
             - valgrind
           sources: &precise_latest_boost_sources
             - ubuntu-toolchain-r-test
