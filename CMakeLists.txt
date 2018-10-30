@@ -11,6 +11,7 @@ if (CMAKE_COMPILER_IS_GNUCC)
     if (ENABLE_COVERAGE)
         add_compile_options(--coverage -O0)
     endif()
+endif()
 
 if (GCC_RELEASE_MODE)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${GCC_RELEASE_COMPILE_FLAGS}")
