@@ -26,7 +26,7 @@ matrix:
             #- clang-6.0
             - valgrind
             - xorg-dev
-            - lunarg-vulkan-sdk
+            - libvulkan1
           sources: &precise_latest_boost_sources
             - ubuntu-toolchain-r-test
             #- llvm-toolchain-trusty-6.0
