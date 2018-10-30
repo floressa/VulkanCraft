@@ -44,8 +44,8 @@ install:
   - ${CXX} -v
   - sudo pip install codecov
   - mkdir -p ${DEPS_DIR}/vulkan
-  - wget "https://vulkan.lunarg.com/sdk/home#sdk/downloadConfirm/1.1.85.0/linux/vulkansdk-linux-x86_64-1.1.85.0.tar.gz" -P ${DEPS_DIR}/vulkan
-  - tar zxf ${DEPS_DIR}/vulkan/vulkansdk-linux-x86_64-1.1.85.0.tar.gz
+  - wget -O "https://vulkan.lunarg.com/sdk/home#sdk/downloadConfirm/1.1.85.0/linux/vulkansdk-linux-x86_64-1.1.85.0.tar.gz" | tar -zxf -C ${DEPS_DIR}/vulkan
+  #- export PATH=${DEPS_DIR}/vulkan:${PATH}
   - ls ${DEPS_DIR}/vulkan
 
   # Download and install recent cmake
