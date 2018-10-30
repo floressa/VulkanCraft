@@ -4,7 +4,22 @@ project(VulkanCraftEngine)
 #--------------------------------------------------
 # Define Build options
 #--------------------------------------------------
+option(GCC_RELEASE_MODE "Use Vulkan Optimizations" ON)
+if (CMAKE_COMPILER_IS_GNUCC)
+    option(ENABLE_COVERAGE "Enable coverage reporting for gcc/clang" FALSE)
+
+    if (ENABLE_COVERAGE)
+        add_compile_options(--coverage -O0)
+    endif()
+
+if (GCC_RELEASE_MODE)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${GCC_RELEASE_COMPILE_FLAGS}")
+endif()
+
+
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake")
+# Not sure if this is necessary
+# set(GCC_RELEASE_COMPILE_FLAGS "-O3")
 
 # C++ Build options
 set(CMAKE_CXX_STANDARD 17)
@@ -33,19 +48,12 @@ configure_file(
     "${PROJECT_BINARY_DIR}/VulkanCraftConfig.h"
 )
 
+# VulkanCraft specific compile options declaration
+# option(GNU_COMPILED "Use GNU Compiler" OFF)
+
 # Add the binary tree to the search path for include files
 # so that we will find VulkanCraftConfig.h
 include_directories("${PROJECT_BINARY_DIR}")
-
-# VulkanCraft specific compile options declaration
-option(GNU_COMPILED "Use GNU Compiler" OFF)
-
-set(GCC_RELEASE_COMPILE_FLAGS "-O3")
-option(GCC_RELEASE_MODE "Use Vulkan Optimizations" ON)
-
-if (GCC_RELEASE_MODE)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${GCC_RELEASE_COMPILE_FLAGS}")
-endif()
 
 
 #--------------------------------------------------
