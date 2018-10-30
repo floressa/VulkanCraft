@@ -11,6 +11,9 @@ General notes taken while making the project
 
 ## General
 
+- Comments made in the style of `// !` or `// *` are done so to interact with the Better Comments extension for Visual Studio Code
+- Referenced [this repo](https://github.com/gujans/travis-gtest-cmake-example/blob/master/.travis.yml) for help integrating travis and testing
+
 ### OS-Specific
 
 #### Windows
