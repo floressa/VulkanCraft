@@ -20,7 +20,7 @@ struct SwapChainSupportDetails
 class Device
 {
 public:
-    Device(/* args */);
+    Device();
     ~Device();
 
     void init(VkInstance& instance);
@@ -31,7 +31,6 @@ public:
 
     VkFormat findSupportedFormat(const std::vector<VkFormat>& candidates,
         VkImageTiling tiling, VkFormatFeatureFlags features);
-   
 
     void createImage(uint32_t width, uint32_t height, uint32_t mipLevels,
         VkSampleCountFlagBits numSamples, VkFormat format, VkImageTiling tiling,

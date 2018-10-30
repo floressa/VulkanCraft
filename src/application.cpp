@@ -76,10 +76,7 @@ void Application::cleanup()
     // Device cleanup
     renderer.cleanup();
 
-    vkFreeCommandBuffers(device, commandPool,
-        static_cast<uint32_t>(commandBuffers.size()),
-        commandBuffers.data()
-    );
+
 
     for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
     {
