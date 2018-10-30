@@ -12,6 +12,7 @@ public:
     ~CommandPool() { }
 
     void init();
+    void cleanup();
 
     VkCommandBuffer beginSingleTimeCommands();
     void endSingleTimeCommands(VkCommandBuffer CommandBuffer);

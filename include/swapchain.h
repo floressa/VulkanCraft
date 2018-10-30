@@ -7,12 +7,6 @@
 
 #include "device.h"
 
-struct SwapChainSupportDetails
-{
-    VkSurfaceCapabilitiesKHR capabilities;
-    std::vector<VkSurfaceFormatKHR> formats;
-    std::vector<VkPresentModeKHR> presentModes;
-};
 
 class SwapChain
 {
@@ -36,6 +30,8 @@ public:
 
     // TODO: Separate shader interaction into class
     VkShaderModule createShaderModule(const std::vector<char>& code);
+
+    SwapChainSupportDetails querySwapChainSupport(VkPhysicalDevice device, VkSurfaceKHR surface);
 
 private:
     Device* device;
@@ -68,7 +64,6 @@ private:
     void createGraphicsPipeline();
     void createRenderPass();
 
-    SwapChainSupportDetails querySwapChainSupport(VkPhysicalDevice device);
     VkSurfaceFormatKHR chooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats);
     VkPresentModeKHR chooseSwapPresentMode(const std::vector<VkPresentModeKHR> availablePresentModes);
     VkExtent2D chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities);

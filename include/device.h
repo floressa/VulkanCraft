@@ -9,16 +9,23 @@
 
 const std::vector<const char*> deviceExtensions = {VK_KHR_SWAPCHAIN_EXTENSION_NAME};
 
+// Device support for swapchain features
+struct SwapChainSupportDetails
+{
+    VkSurfaceCapabilitiesKHR capabilities;
+    std::vector<VkSurfaceFormatKHR> formats;
+    std::vector<VkPresentModeKHR> presentModes;
+};
+
 class Device
 {
 public:
     Device(/* args */);
     ~Device();
 
-    void init(VkInstance instance);
+    void init(VkInstance& instance);
 
-    VkPhysicalDevice& getPhysicalDevice() { return &physicalDevice; }
-    VkDevice& getLogicalDevice() { return &device; }
+    void waitIdle();
 
     QueueFamilyIndices findQueueFamilies();
 
@@ -45,17 +52,21 @@ public:
     void copyBufferToImage(VkBuffer buffer, VkImage image, uint32_t width, uint32_t height);
 
     VkSampleCountFlagBits getMaxUsableSampleCount();
+
+    SwapChainSupportDetails Device::querySwapChainSupport(VkPhysicalDevice device, VkSurfaceKHR surface);
+
     VkQueue getPresentQueue() { return presentQueue; }
     VkQueue getGraphicsQueue() { return graphicsQueue; }
-
+    VkPhysicalDevice& getPhysicalDevice() { return &physicalDevice; }
+    VkDevice& getLogicalDevice() { return &logicalDevice; }
 
 private:
     VkPhysicalDevice physicalDevice = VK_NULL_HANDLE;
-    VkDevice device;  // Logical device
+    VkDevice logicalDevice;
     VkQueue graphicsQueue;
     VkQueue presentQueue;
 
-    void pickPhysicalDevice(VkInstance instance);
+    void pickPhysicalDevice(VkInstance& instance);
     bool isDeviceSuitable(VkPhysicalDevice device);
     void createLogicalDevice();
 

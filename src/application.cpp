@@ -2,6 +2,7 @@
 
 #include <stdexcept>
 
+#include "validationLayer.h"
 #include "callbacks.h"
 
 VkResult CreateDebugUtilsMessengerEXT(
@@ -60,8 +61,6 @@ void Application::initVulkan()
     createSyncObjects();
 
     // Device.h
-    // pickPhysicalDevice();
-    // createLogicalDevice();
     // ! Need to dynamically instantiate device, should probably handle init in device constructor
     device.init(instance);
 
@@ -69,65 +68,13 @@ void Application::initVulkan()
     commandPool.init();
 
     // ! Renderer.h
-    // createDescriptorSetLayout();
     renderer.init();
-    
-    // ! SwapChain.h
-    // createSwapChain();
-    // createImageViews();
-    // createRenderPass();
-    // createGraphicsPipeline();
-    // createColorResources();
-    // createDepthResources();
-    // createFramebuffers(); // Needs renderer
-
-
-    // ! Renderer.h
-    createTextureImage();
-    createTextureImageView();
-    createTextureSampler();
-
-    // temp function Model.h?
-    loadModel();
-
-    // ! Renderer.h
-    // * Buffer Creation - Post geo load functions
-    createVertexBuffer();
-    createIndexBuffer();
-    createUniformBuffer();
-
-    createDescriptorPool();
-    createDescriptorSets();
-
-    // Application - requires geo buffers
-    createCommandBuffers();
 }
 
 void Application::cleanup()
 {
     // Device cleanup
-    swapChain.cleanup();
-
-    vkDestroySampler(device, textureSampler, nullptr);
-    vkDestroyImageView(device, textureImageView, nullptr);
-
-    vkDestroyImage(device, textureImage, nullptr);
-    vkFreeMemory(device, textureImageMemory, nullptr);
-
-    vkDestroyDescriptorPool(device, descriptorPool, nullptr);
-    vkDestroyDescriptorSetLayout(device, descriptorSetLayout, nullptr);
-
-    for (size_t i = 0; i < swapChainImages.size(); i++)
-    {
-        vkDestroyBuffer(device, uniformBuffers[i], nullptr);
-        vkFreeMemory(device, uniformBuffersMemory[i], nullptr);
-    }
-
-    vkDestroyBuffer(device, indexBuffer, nullptr);
-    vkFreeMemory(device, indexBufferMemory, nullptr);
-
-    vkDestroyBuffer(device, vertexBuffer, nullptr);
-    vkFreeMemory(device, vertexBufferMemory, nullptr);
+    renderer.cleanup();
 
     vkFreeCommandBuffers(device, commandPool,
         static_cast<uint32_t>(commandBuffers.size()),
@@ -164,10 +111,10 @@ void Application::mainLoop()
     while (!glfwWindowShouldClose(window))
     {
         glfwPollEvents();
-        drawFrame();
+        renderer.drawFrame();
     }
 
-    vkDeviceWaitIdle(device);
+    device.waitIdle();
 }
 
 void Application::createInstance()

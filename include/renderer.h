@@ -8,7 +8,13 @@
 
 #include "device.h"
 #include "swapchain.h"
+#include "command.h"
 #include "vertex.h"
+#include "texture.h"
+#include "mesh.h"
+
+const std::string TEXTURE_PATH = "../textures/chalet.jpg";
+
 
 struct UniformBufferObject
 {
@@ -24,12 +30,16 @@ public:
     ~Renderer() { }
 
     void init();
-
     void drawFrame();
+    void cleanupSwapChain();
+    void cleanup();
 
 private:
     Device* device;
     SwapChain swapChain;
+    CommandPool command;
+
+    std::vector<Texture> textures;
 
     std::vector<Vertex> vertices;
     std::vector<uint32_t> indices;
@@ -47,12 +57,6 @@ private:
 
     std::vector<VkBuffer> uniformBuffers;
     std::vector<VkDeviceMemory> uniformBuffersMemory;
-    
-    VkImage textureImage;
-    VkDeviceMemory textureImageMemory;
-    VkImageView textureImageView;
-
-    uint32_t mipLevels;
 
     size_t currentFrame = 0;
     

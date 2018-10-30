@@ -16,18 +16,24 @@ void Renderer::init()
     // TODO: SwapChain must be initialized before renderer.init(), throw error if not
     swapChain.init();
 
-    createTextureImage();
-    createTextureImageView();
     createTextureSampler();
 
-    // ! GEO LOADING GOES HERE
+    // ! Texture loading
+    createTextureImage();
+    createTextureImageView();
 
+    // ! Geo loading
+    loadModel();
+
+    // ! Buffer creation
     createVertexBuffer();
     createIndexBuffer();
     createUniformBuffers();
 
     createDescriptorPool();
     createDescriptorSets();
+
+    command.createCommandBuffers();
 }
 
 void Renderer::drawFrame()
@@ -102,6 +108,38 @@ void Renderer::drawFrame()
     vkQueueWaitIdle(presentQueue);
 
     currentFrame = (currentFrame + 1) % MAX_FRAMES_IN_FLIGHT;
+}
+
+void Renderer::cleanupSwapChain()
+{
+    swapChain.cleanup();
+}
+
+void Renderer::cleanup()
+{
+    cleanupSwapChain();
+
+    vkDestroySampler(device->getLogicalDevice(), textureSampler, nullptr);
+
+    for (auto texture : textures)
+    {
+        texture.cleanup();
+    }
+
+    vkDestroyDescriptorPool(device->getLogicalDevice(), descriptorPool, nullptr);
+    vkDestroyDescriptorSetLayout(device->getLogicalDevice(), descriptorSetLayout, nullptr);
+
+    for (size_t i = 0; i < swapChain.getImageCount(); i++)
+    {
+        vkDestroyBuffer(device->getLogicalDevice(), uniformBuffers[i], nullptr);
+        vkFreeMemory(device->getLogicalDevice(), uniformBuffersMemory[i], nullptr);
+    }
+
+    vkDestroyBuffer(device->getLogicalDevice(), indexBuffer, nullptr);
+    vkFreeMemory(device->getLogicalDevice(), indexBufferMemory, nullptr);
+
+    vkDestroyBuffer(device->getLogicalDevice(), vertexBuffer, nullptr);
+    vkFreeMemory(device->getLogicalDevice(), vertexBufferMemory, nullptr);
 }
 
 void Renderer::createDescriptorSetLayout()
@@ -254,16 +292,6 @@ void Renderer::createIndexBuffer()
 
     vkDestroyBuffer(device->getLogicalDevice(), stagingBuffer, nullptr);
     vkFreeMemory(device->getLogicalDevice(), stagingBufferMemory, nullptr);
-}
-
-void Renderer::createTextureImageView()
-{
-    textureImageView = createImageView(
-        textureImage,
-        VK_FORMAT_R8G8B8A8_UNORM,
-        VK_IMAGE_ASPECT_COLOR_BIT,
-        mipLevels
-    );
 }
 
 void Renderer::createTextureSampler()

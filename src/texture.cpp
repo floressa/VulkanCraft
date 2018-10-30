@@ -1,10 +1,24 @@
 #include "texture.h"
 
-void Texture::createTextureImage()
+#define STB_IMAGE_IMPLEMENTATION
+#include <stb_image.h>
+
+#include "device.h"
+#include "commandPool.h"
+
+
+void Texture::cleanup()
+{
+    vkDestroyImageView(device->getLogicalDevice(), textureImageView, nullptr);
+    vkDestroyImage(device->getLogicalDevice(), textureImage, nullptr);
+    vkFreeMemory(device->getLogicalDevice(), textureImageMemory, nullptr);
+}
+
+void Texture::createTextureImage(std::string path)
 {
     int texWidth, texHeight, texChannels;
     
-    stbi_uc* pixels = stbi_load(TEXTURE_PATH.c_str(), &texWidth, &texHeight, &texChannels,
+    stbi_uc* pixels = stbi_load(path.c_str(), &texWidth, &texHeight, &texChannels,
         STBI_rgb_alpha);
     VkDeviceSize imageSize = texWidth * texHeight * 4;
     mipLevels = static_cast<uint32_t>(std::floor(std::log2(std::max(texWidth, texHeight)))) + 1;
@@ -16,25 +30,25 @@ void Texture::createTextureImage()
 
     VkBuffer stagingBuffer;
     VkDeviceMemory stagingBufferMemory;
-    createBuffer(imageSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
+    device->createBuffer(imageSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
         VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
         stagingBuffer, stagingBufferMemory);
 
     void* data;
-    vkMapMemory(device, stagingBufferMemory, 0, imageSize, 0, &data);
+    vkMapMemory(device->getLogicalDevice(), stagingBufferMemory, 0, imageSize, 0, &data);
     memcpy(data, pixels, static_cast<size_t>(imageSize));
-    vkUnmapMemory(device, stagingBufferMemory);
+    vkUnmapMemory(device->getLogicalDevice(), stagingBufferMemory);
 
     stbi_image_free(pixels);
 
-    createImage(
+    device->createImage(
         texWidth, texHeight, mipLevels, VK_SAMPLE_COUNT_1_BIT,
         VK_FORMAT_R8G8B8A8_UNORM, VK_IMAGE_TILING_OPTIMAL,
         VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT,
         VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, textureImage, textureImageMemory
     );
 
-    transitionImageLayout(
+    device->transitionImageLayout(
         textureImage,
         VK_FORMAT_R8G8B8A8_UNORM,
         VK_IMAGE_LAYOUT_UNDEFINED,
@@ -42,14 +56,14 @@ void Texture::createTextureImage()
         mipLevels
     );
 
-    copyBufferToImage(stagingBuffer, textureImage, static_cast<uint32_t>(texWidth),
+    device->copyBufferToImage(stagingBuffer, textureImage, static_cast<uint32_t>(texWidth),
         static_cast<uint32_t>(texHeight));
 
     // Transitioned to VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL while generating mipmaps
     generateMipmaps(textureImage, VK_FORMAT_R8G8B8A8_UNORM, texWidth, texHeight, mipLevels);
 
-    vkDestroyBuffer(device, stagingBuffer, nullptr);
-    vkFreeMemory(device, stagingBufferMemory, nullptr);
+    vkDestroyBuffer(device->getLogicalDevice(), stagingBuffer, nullptr);
+    vkFreeMemory(device->getLogicalDevice(), stagingBufferMemory, nullptr);
 }
 
 // Generating mipmaps as part of setup tutorial, not sure if necessary, if so:
@@ -58,7 +72,7 @@ void Texture::generateMipmaps(VkImage image, VkFormat imageFormat, int32_t texWi
 {
     // Check if image format supports linear blitting
     VkFormatProperties formatProperties;
-    vkGetPhysicalDeviceFormatProperties(physicalDevice, imageFormat, &formatProperties);
+    vkGetPhysicalDeviceFormatProperties(device->getPhysicalDevice(), imageFormat, &formatProperties);
     
     if (!(formatProperties.optimalTilingFeatures & VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_LINEAR_BIT))
     {
@@ -151,4 +165,14 @@ void Texture::generateMipmaps(VkImage image, VkFormat imageFormat, int32_t texWi
     );
 
     endSingleTimeCommands(commandBuffer);
+}
+
+void Texture::createTextureImageView()
+{
+    textureImageView = device->createImageView(
+        textureImage,
+        VK_FORMAT_R8G8B8A8_UNORM,
+        VK_IMAGE_ASPECT_COLOR_BIT,
+        mipLevels
+    );
 }

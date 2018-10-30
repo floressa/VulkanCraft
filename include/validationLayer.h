@@ -14,11 +14,10 @@ const std::vector<const char*> validationLayers = {"VK_LAYER_LUNARG_standard_val
 class ValidationLayer
 {
 public:
-    ValidationLayer(/* args */) { }
+    ValidationLayer() { }
     ~ValidationLayer() { }
 
 private:
-    /* data */
 };
 
 #endif

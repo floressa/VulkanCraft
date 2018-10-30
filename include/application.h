@@ -16,13 +16,13 @@ const int WIDTH = 800;
 const int HEIGHT = 600;
 
 const std::string MODEL_PATH = "../models/chalet.obj";
-const std::string TEXTURE_PATH = "../textures/chalet.jpg";
 
 const int MAX_FRAMES_IN_FLIGHT = 2;
 
 class Application
 {
 public:
+    Application();
     void run();
 
 private:

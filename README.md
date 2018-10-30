@@ -25,7 +25,7 @@ External libraries are currently loaded in as submodules. You will need to clone
 
 ## Notes
 
-General notes taken during the development of this project can be found in [notes.md](notes.md)
+This project is intended as a personal project for learning Vulkan. General notes taken during the development of this project can be found in [notes.md](notes.md)
 
 ## License
 
