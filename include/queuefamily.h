@@ -2,21 +2,26 @@
 #define QUEUEFAMILY_H
 
 #include <algorithm>
-#include <optional>
 
 struct QueueFamilyIndices
 {
-    std::optional<uint32_t> graphicsFamily;
-    std::optional<uint32_t> presentFamily;
+    uint32_t graphicsFamily, presentFamily;
+    bool graphicsFamilySet, presentFamilySet = false;
+
+    void setGraphicsFamily(uint32_t value)
+    {
+        graphicsFamily = value;
+        graphicsFamilySet = true;
+    }
+
+    void setPresentFamily(uint32_t value)
+    {
+        presentFamily = value;
+        presentFamilySet = true;
+    }
 
     bool isComplete() {
-        if (graphicsFamily)
-        {
-            return true;
-        } 
-        else {
-            return false;
-        }
+        return graphicsFamilySet && presentFamilySet;
     }
 };
 

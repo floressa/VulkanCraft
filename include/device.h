@@ -24,6 +24,7 @@ public:
     ~Device();
 
     void init(VkInstance& instance);
+    void cleanup();
 
     void waitIdle();
 

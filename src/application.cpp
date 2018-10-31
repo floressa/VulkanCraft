@@ -75,19 +75,8 @@ void Application::cleanup()
 {
     // Device cleanup
     renderer.cleanup();
-
-
-
-    for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
-    {
-        vkDestroySemaphore(device, renderFinishedSemaphores[i], nullptr);
-        vkDestroySemaphore(device, imageAvailableSemaphores[i], nullptr);
-        vkDestroyFence(device, inFlightFences[i], nullptr);
-    }
-
-    vkDestroyCommandPool(device, commandPool, nullptr);
     
-    vkDestroyDevice(device, nullptr);
+    device.cleanup();
 
     // Instance cleanup
     if (enableValidationLayers)

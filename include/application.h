@@ -28,10 +28,10 @@ public:
 private:
     // ! May want to create separate Window class
     GLFWwindow* window;
+    VkSurfaceKHR surface;
     
     VkInstance instance;
     VkDebugUtilsMessengerEXT callback;
-    VkSurfaceKHR surface;
     
     Device device;
     Renderer renderer;

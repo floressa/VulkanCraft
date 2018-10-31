@@ -12,6 +12,8 @@ void CommandPool::cleanup()
         static_cast<uint32_t>(commandBuffers.size()),
         commandBuffers.data()
     );
+
+    vkDestroyCommandPool(device->getLogicalDevice(), vkCommandPool, nullptr);
 }
 
 VkCommandBuffer CommandPool::beginSingleTimeCommands()

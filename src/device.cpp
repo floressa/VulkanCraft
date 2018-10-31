@@ -12,6 +12,11 @@ void Device::init(VkInstance& instance)
     createLogicalDevice();
 }
 
+void Device::cleanup()
+{
+    vkDestroyDevice(logicalDevice, nullptr);
+}
+
 void Device::waitIdle()
 {
     vkDeviceWaitIdle(logicalDevice);
@@ -373,7 +378,7 @@ void Device::createLogicalDevice()
     QueueFamilyIndices indices = findQueueFamilies();
 
     std::vector<VkDeviceQueueCreateInfo> queueCreateInfos;
-    std::set<uint32_t> uniqueQueueFamilies = {indices.graphicsFamily.value(), indices.presentFamily.value()};
+    std::set<uint32_t> uniqueQueueFamilies = {indices.graphicsFamily, indices.presentFamily};
 
     float queuePriority = 1.0f;
     for (uint32_t queueFamily : uniqueQueueFamilies)
@@ -413,8 +418,8 @@ void Device::createLogicalDevice()
         throw std::runtime_error("failed to create logical device!");
     }
 
-    vkGetDeviceQueue(logicalDevice, indices.graphicsFamily.value(), 0, &graphicsQueue);
-    vkGetDeviceQueue(logicalDevice, indices.presentFamily.value(), 0, &presentQueue);
+    vkGetDeviceQueue(logicalDevice, indices.graphicsFamily, 0, &graphicsQueue);
+    vkGetDeviceQueue(logicalDevice, indices.presentFamily, 0, &presentQueue);
 }
 
 bool Device::checkDeviceExtensionSupport(VkPhysicalDevice device)
@@ -466,14 +471,15 @@ QueueFamilyIndices Device::findQueueFamiliesHelper(VkPhysicalDevice device)
     {
         if (queueFamily.queueCount > 0 && queueFamily.queueFlags & VK_QUEUE_GRAPHICS_BIT)
         {
-            indices.graphicsFamily = i;
+            indices.setGraphicsFamily(i);
         }
 
         VkBool32 presentSupport = false;
         vkGetPhysicalDeviceSurfaceSupportKHR(device, i, surface, &presentSupport);
+
         if (queueFamily.queueCount > 0 && presentSupport)
         {
-            indices.presentFamily = i;
+            indices.setPresentFamily(i);
         }
 
         if (indices.isComplete())
