@@ -3,7 +3,8 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
 
-#include "device.h"
+#include <stdexcept>
+
 #include "commandPool.h"
 
 
@@ -14,22 +15,25 @@ void Texture::cleanup()
     vkFreeMemory(device->getLogicalDevice(), textureImageMemory, nullptr);
 }
 
-void Texture::createTextureImage(std::string path)
+void Texture::loadTextureFromFile(std::string path)
 {
-    int texWidth, texHeight, texChannels;
-    
-    stbi_uc* pixels = stbi_load(path.c_str(), &texWidth, &texHeight, &texChannels,
+    pixels = stbi_load(path.c_str(), &texWidth, &texHeight, &texChannels,
         STBI_rgb_alpha);
-    VkDeviceSize imageSize = texWidth * texHeight * 4;
     mipLevels = static_cast<uint32_t>(std::floor(std::log2(std::max(texWidth, texHeight)))) + 1;
 
     if (!pixels)
     {
         throw std::runtime_error("Failed to load texture image!");
     }
+}
+
+void Texture::createTextureImage()
+{
+    VkDeviceSize imageSize = texWidth * texHeight * 4;
 
     VkBuffer stagingBuffer;
     VkDeviceMemory stagingBufferMemory;
+
     device->createBuffer(imageSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
         VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
         stagingBuffer, stagingBufferMemory);
@@ -56,11 +60,20 @@ void Texture::createTextureImage(std::string path)
         mipLevels
     );
 
-    device->copyBufferToImage(stagingBuffer, textureImage, static_cast<uint32_t>(texWidth),
-        static_cast<uint32_t>(texHeight));
+    device->copyBufferToImage(
+        stagingBuffer, textureImage,
+        static_cast<uint32_t>(texWidth),
+        static_cast<uint32_t>(texHeight)
+    );
 
     // Transitioned to VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL while generating mipmaps
-    generateMipmaps(textureImage, VK_FORMAT_R8G8B8A8_UNORM, texWidth, texHeight, mipLevels);
+    generateMipmaps(
+        textureImage,
+        VK_FORMAT_R8G8B8A8_UNORM,
+        static_cast<uint32_t>(texWidth),
+        static_cast<uint32_t>(texHeight),
+        mipLevels
+    );
 
     vkDestroyBuffer(device->getLogicalDevice(), stagingBuffer, nullptr);
     vkFreeMemory(device->getLogicalDevice(), stagingBufferMemory, nullptr);
@@ -68,7 +81,7 @@ void Texture::createTextureImage(std::string path)
 
 // Generating mipmaps as part of setup tutorial, not sure if necessary, if so:
 // TODO: add offline mipmap generation
-void Texture::generateMipmaps(VkImage image, VkFormat imageFormat, int32_t texWidth, int32_t texHeight, uint32_t mipLevels)
+void Texture::generateMipMaps(VkImage image, VkFormat imageFormat, int32_t texWidth, int32_t texHeight, uint32_t mipLevels)
 {
     // Check if image format supports linear blitting
     VkFormatProperties formatProperties;

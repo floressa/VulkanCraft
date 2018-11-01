@@ -1,5 +1,7 @@
 #include "commandPool.h"
 
+#include <stdexcept>
+
 void CommandPool::init()
 {
     // TODO: Requires device to be initialized, throw error if not
@@ -57,7 +59,7 @@ void CommandPool::createCommandPool()
 
     VkCommandPoolCreateInfo poolInfo = {};
     poolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
-    poolInfo.queueFamilyIndex = queueFamilyIndices.graphicsFamily.value();
+    poolInfo.queueFamilyIndex = queueFamilyIndices.graphicsFamily;
     poolInfo.flags = 0; // Optional
 
     if (vkCreateCommandPool(device->getLogicalDevice(), &poolInfo, nullptr, &vkCommandPool) != VK_SUCCESS)

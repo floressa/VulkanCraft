@@ -5,6 +5,8 @@
 
 #include <string>
 
+#include "device.h"
+
 class Texture
 {
 public:
@@ -13,10 +15,17 @@ public:
 
     void cleanup();
     
-    void createTextureImage(std::string path);
+    void loadTextureFromFile(std::string path);
+    void createTextureImage();
 
 private:
     Device* device;
+
+    int texWidth;
+    int texHeight;
+    int texChannels;
+
+    stbi_uc* pixels;
 
     uint32_t mipLevels;
 

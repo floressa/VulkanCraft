@@ -1,19 +1,22 @@
-#include "model.h"
+#include "mesh.h"
 
-void Model::loadModel()
+#include <unordered_map>
+
+void Mesh::loadModelFromFile(std::string path)
 {
-    tinyobj::attrib_t attrib;
-    std::vector<tinyobj::shape_t> shapes;
-    std::vector<tinyobj::material_t> materials;
     std::string err;
 
-    if (!tinyobj::LoadObj(&attrib, &shapes, &materials, &err, &err, MODEL_PATH.c_str(), nullptr))
+    if (!tinyobj::LoadObj(&attrib, &shapes, &materials, &err, &err, path.c_str(), nullptr))
     {
         throw std::runtime_error(err);
     }
 
-    std::unordered_map<Vertex, uint32_t> uniqueVertices = {};
+    extractVertexData();
+}
 
+void Mesh::extractVertexData()
+{   
+    std::unordered_map<Vertex, uint32_t> uniqueVertices = {};
 
     for (const auto& shape : shapes)
     {
@@ -44,4 +47,3 @@ void Model::loadModel()
         }
     }
 }
-

@@ -35,7 +35,6 @@ private:
     
     Device device;
     Renderer renderer;
-    CommandPool commandPool;
 
     bool framebufferResized = false;
 

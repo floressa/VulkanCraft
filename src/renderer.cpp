@@ -256,7 +256,12 @@ void Renderer::createDescriptorPool()
 
 void Renderer::createVertexBuffer()
 {
-    VkDeviceSize bufferSize = sizeof(vertices[0]) * vertices.size();
+    uint64_t vertexCount;
+    for (mesh : meshes)
+    {
+        vertexCount += mesh.getVertexCount();
+    }
+    VkDeviceSize bufferSize = sizeof(Vertex) * vertexCount;
 
     VkBuffer stagingBuffer;
     VkDeviceMemory stagingBufferMemory;
@@ -280,7 +285,12 @@ void Renderer::createVertexBuffer()
 
 void Renderer::createIndexBuffer()
 {
-    VkDeviceSize bufferSize = sizeof(indices[0]) * indices.size();
+    uint64_t indexCount;
+    for (mesh : meshes)
+    {
+        indexCount += mesh.getIndexCount();
+    }
+    VkDeviceSize bufferSize = sizeof(uint32_t) * indexCount;
 
     VkBuffer stagingBuffer;
     VkDeviceMemory stagingBufferMemory;

@@ -37,12 +37,13 @@ public:
 private:
     Device* device;
     SwapChain swapChain;
-    CommandPool command;
+    CommandPool commandPool;
 
     std::vector<Texture> textures;
+    std::vector<Mesh> meshes;
 
-    std::vector<Vertex> vertices;
-    std::vector<uint32_t> indices;
+    //std::vector<Vertex> vertices;
+    //std::vector<uint32_t> indices;
 
     VkBuffer vertexBuffer;
     VkDeviceMemory vertexBufferMemory;
@@ -75,8 +76,6 @@ private:
     void createIndexBuffer();
     void createUniformBuffers();
     void updateUniformBuffer(uint32_t currentImage);
-
-    void createTextureImageView();
     
     // ! Texture samplers might not be necessary for this project but I will
     // ! add the structure needed to use them in Vulkan anyways for now
