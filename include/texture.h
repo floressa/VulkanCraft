@@ -10,16 +10,18 @@
 class Texture
 {
 public:
-    Texture(/* args */) { }
+    Texture(std::string inPath) : path(inPath) {}
     ~Texture() { }
 
     void cleanup();
     
-    void loadTextureFromFile(std::string path);
+    void load();
     void createTextureImage();
 
 private:
     Device* device;
+
+    std::string path;
 
     int texWidth;
     int texHeight;

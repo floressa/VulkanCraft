@@ -2,9 +2,14 @@
 
 #include <stdexcept>
 
-void CommandPool::init()
+void CommandPool::init(Device* inDevice)
 {
-    // TODO: Requires device to be initialized, throw error if not
+    device = inDevice;
+    if (!device->isInitialized())
+    {
+        throw std::runtime_error("Device was uninitialized while attempting to initialize commandPool");
+    }
+    
     createCommandPool();
 }
 

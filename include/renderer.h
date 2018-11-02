@@ -13,7 +13,9 @@
 #include "texture.h"
 #include "mesh.h"
 
+// Temporary hard-coded paths
 const std::string TEXTURE_PATH = "../textures/chalet.jpg";
+const std::string MODEL_PATH = "../models/chalet.obj";
 
 
 struct UniformBufferObject
@@ -29,7 +31,7 @@ public:
     Renderer(/* args */) { }
     ~Renderer() { }
 
-    void init();
+    void init(Device* inDevice);
     void drawFrame();
     void cleanupSwapChain();
     void cleanup();
@@ -41,9 +43,6 @@ private:
 
     std::vector<Texture> textures;
     std::vector<Mesh> meshes;
-
-    //std::vector<Vertex> vertices;
-    //std::vector<uint32_t> indices;
 
     VkBuffer vertexBuffer;
     VkDeviceMemory vertexBufferMemory;
@@ -65,6 +64,7 @@ private:
     std::vector<VkSemaphore> renderFinishedSemaphores;
     std::vector<VkFence> inFlightFences;
 
+    void createSyncObjects();
 
     // ! Moved from Application, still might not be the right place
     void createDescriptorSetLayout();

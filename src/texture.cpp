@@ -15,8 +15,13 @@ void Texture::cleanup()
     vkFreeMemory(device->getLogicalDevice(), textureImageMemory, nullptr);
 }
 
-void Texture::loadTextureFromFile(std::string path)
+void Texture::load()
 {
+    if (path.empty())
+    {
+        throw std::runtime_error("Attempted to load texture with no path");
+    }
+
     pixels = stbi_load(path.c_str(), &texWidth, &texHeight, &texChannels,
         STBI_rgb_alpha);
     mipLevels = static_cast<uint32_t>(std::floor(std::log2(std::max(texWidth, texHeight)))) + 1;

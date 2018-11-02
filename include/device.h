@@ -28,6 +28,8 @@ public:
 
     void waitIdle();
 
+    bool isInitialized() { return initialized; }
+
     QueueFamilyIndices findQueueFamilies();
 
     VkFormat findSupportedFormat(const std::vector<VkFormat>& candidates,
@@ -61,6 +63,8 @@ public:
     VkDevice& getLogicalDevice() { return &logicalDevice; }
 
 private:
+    bool initialized = false;
+
     VkPhysicalDevice physicalDevice = VK_NULL_HANDLE;
     VkDevice logicalDevice;
     VkQueue graphicsQueue;

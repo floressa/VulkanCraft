@@ -11,7 +11,7 @@ public:
     CommandPool(/* args */) { }
     ~CommandPool() { }
 
-    void init();
+    void init(Device* inDevice);
     void cleanup();
 
     VkCommandBuffer beginSingleTimeCommands();

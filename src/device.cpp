@@ -10,11 +10,15 @@ void Device::init(VkInstance& instance)
 {
     pickPhysicalDevice(instance);
     createLogicalDevice();
+
+    initialized = true;
 }
 
 void Device::cleanup()
 {
     vkDestroyDevice(logicalDevice, nullptr);
+
+    initialized = false;
 }
 
 void Device::waitIdle()

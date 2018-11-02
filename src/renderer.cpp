@@ -8,22 +8,42 @@
 #include "fileio.h"
 #include "vertex.h"
 
-void Renderer::init()
+void Renderer::init(Device* inDevice)
 {
+    device = inDevice;
+    if (!device->isInitialized())
+    {
+        throw std::runtime_error("Device was uninitialized while attempting to initialize renderer");
+    }
+
+    commandPool.init(device);
+
+    createSyncObjects();
     createDescriptorSetLayout();
 
-    // TODO: Device must be initialized before renderer.init(), throw error if not
-    // TODO: SwapChain must be initialized before renderer.init(), throw error if not
     swapChain.init();
 
     createTextureSampler();
 
+    /**
+     * Need some kind of managing structure that bridges gameObject components with the renderer
+     * 
+     * Maybe a 
+     */
     // ! Texture loading
-    createTextureImage();
-    createTextureImageView();
+    // createTextureImage();
+    // createTextureImageView();
+    for (texture : textures)
+    {
+        texture.load();
+    }
 
     // ! Geo loading
-    loadModel();
+    // loadModels();
+    for (model : models)
+    {
+        model.load();
+    }
 
     // * Buffer creation
     createVertexBuffer();
@@ -117,7 +137,7 @@ void Renderer::cleanupSwapChain()
 
 void Renderer::cleanup()
 {
-    cleanupSwapChain();
+    swapChain.cleanup();
 
     vkDestroySampler(device->getLogicalDevice(), textureSampler, nullptr);
 
@@ -150,6 +170,31 @@ void Renderer::cleanup()
         vkDestroyFence(device, inFlightFences[i], nullptr);
     }
 }
+
+void Renderer::createSyncObjects()
+{
+    imageAvailableSemaphores.resize(MAX_FRAMES_IN_FLIGHT);
+    renderFinishedSemaphores.resize(MAX_FRAMES_IN_FLIGHT);
+    inFlightFences.resize(MAX_FRAMES_IN_FLIGHT);
+
+    VkSemaphoreCreateInfo semaphoreInfo = {};
+    semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
+
+    VkFenceCreateInfo fenceInfo = {};
+    fenceInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
+    fenceInfo.flags = VK_FENCE_CREATE_SIGNALED_BIT;
+
+    for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
+    {
+        if (vkCreateSemaphore(device->getLogicalDevice(), &semaphoreInfo, nullptr, &imageAvailableSemaphores[i]) != VK_SUCCESS ||
+            vkCreateSemaphore(device->getLogicalDevice(), &semaphoreInfo, nullptr, &renderFinishedSemaphores[i]) != VK_SUCCESS ||
+            vkCreateFence(device->getLogicalDevice(), &fenceInfo, nullptr, &inFlightFences[i]) != VK_SUCCESS)
+        {
+            throw std::runtime_error("Failed to create sync objects for a frame!");
+        }
+    }
+}
+
 
 void Renderer::createDescriptorSetLayout()
 {
