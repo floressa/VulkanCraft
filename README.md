@@ -1,10 +1,6 @@
-# VulkanCraft
+# Vulkan Engine Learning
 
-A Minecraft clone made using Vulkan.
-
-**- IMPORTANT - Currently the project is only Vulkan/Engine setup. The Minecraft part is very much in the beginning stages.**
-
-Inspired by Hopson's 'Coding Minecraft in One Week' video, but using Vulkan instead of OpenGL and building with CMake as a learning exercise (...and not in a week).
+This project is a learning exercise to try to create an engine structure using  Vulkan as the base graphics API and a few popular utility libraries
 
 ## Getting Started
 
@@ -14,7 +10,7 @@ To build from source, a Vulkan SDK needs to be installed on your computer. The L
 
 ### Installation
 
-External libraries are currently loaded in as submodules. You will need to clone the repo with `git clone --recurse-submodules https://github.com/floressa/VulkanCraft`
+External libraries are currently loaded in as submodules. You will need to clone the repo with `git clone --recurse-submodules https://github.com/floressa/vulkan-engine-learning`
 
 ## Built With
 
