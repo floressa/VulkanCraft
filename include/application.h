@@ -1,20 +1,17 @@
 #ifndef APPLICATION_H
 #define APPLICATION_H
+#pragma once
 
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
 
 #include <vector>
 
-#include "swapchain.h"
 #include "device.h"
 #include "renderer.h"
-#include "commandPool.h"
-
 
 const int WIDTH = 800;
 const int HEIGHT = 600;
-
 const int MAX_FRAMES_IN_FLIGHT = 2;
 
 class Application

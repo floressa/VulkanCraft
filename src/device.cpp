@@ -1,15 +1,15 @@
 #include "device.h"
 
+#include <set>
 #include <stdexcept>
 
-#include <set>
-
+#include "queuefamily.h"
 #include "validationLayer.h"
 
-void Device::init(VkInstance& instance)
+void Device::init(VkInstance& instance, bool enableValidationLayers)
 {
     pickPhysicalDevice(instance);
-    createLogicalDevice();
+    createLogicalDevice(enableValidationLayers);
 
     initialized = true;
 }
@@ -377,7 +377,7 @@ bool Device::isDeviceSuitable(VkPhysicalDevice device)
         supportedFeatures.samplerAnisotropy;
 }
 
-void Device::createLogicalDevice()
+void Device::createLogicalDevice(bool enableValidationLayers)
 {
     QueueFamilyIndices indices = findQueueFamilies();
 

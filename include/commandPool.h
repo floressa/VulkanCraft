@@ -1,9 +1,10 @@
 #ifndef COMMANDPOOL_H
 #define COMMANDPOOL_H
+#pragma once
 
 #include <vulkan/vulkan.h>
 
-#include "device.h"
+class Device;
 
 class CommandPool
 {

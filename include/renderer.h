@@ -1,22 +1,23 @@
 #ifndef RENDERER_H
 #define RENDERER_H
+#pragma once
 
 #include <vulkan/vulkan.h>
 
 #define GLM_FORCE_RADIANS
 #include <glm/glm.hpp>
 
-#include "device.h"
+#include "commandPool.h"
 #include "swapchain.h"
-#include "command.h"
-#include "vertex.h"
-#include "texture.h"
-#include "mesh.h"
 
 // Temporary hard-coded paths
 const std::string TEXTURE_PATH = "../textures/chalet.jpg";
 const std::string MODEL_PATH = "../models/chalet.obj";
 
+class Device;
+class Mesh;
+class Texture;
+struct Vertex;
 
 struct UniformBufferObject
 {
@@ -28,9 +29,6 @@ struct UniformBufferObject
 class Renderer
 {
 public:
-    Renderer(/* args */) { }
-    ~Renderer() { }
-
     void init(Device* inDevice);
     void drawFrame();
     void cleanupSwapChain();
@@ -38,6 +36,7 @@ public:
 
 private:
     Device* device;
+
     SwapChain swapChain;
     CommandPool commandPool;
 

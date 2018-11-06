@@ -2,8 +2,8 @@
 
 #include <stdexcept>
 
-#include "validationLayer.h"
 #include "callbacks.h"
+#include "validationLayer.h"
 
 VkResult CreateDebugUtilsMessengerEXT(
     VkInstance instance,

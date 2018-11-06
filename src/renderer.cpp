@@ -5,16 +5,15 @@
 #include <chrono>
 #include <array>
 
+#include "device.h"
 #include "fileio.h"
+#include "mesh.h"
+#include "texture.h"
 #include "vertex.h"
 
 void Renderer::init(Device* inDevice)
 {
     device = inDevice;
-    if (!device->isInitialized())
-    {
-        throw std::runtime_error("Device was uninitialized while attempting to initialize renderer");
-    }
 
     commandPool.init(device);
 
@@ -28,21 +27,20 @@ void Renderer::init(Device* inDevice)
     /**
      * Need some kind of managing structure that bridges gameObject components with the renderer
      * 
-     * Maybe a 
      */
     // ! Texture loading
     // createTextureImage();
     // createTextureImageView();
-    for (texture : textures)
+    for (auto texture : textures)
     {
         texture.load();
     }
 
     // ! Geo loading
     // loadModels();
-    for (model : models)
+    for (auto mesh : meshes)
     {
-        model.load();
+        mesh.load();
     }
 
     // * Buffer creation
@@ -139,20 +137,22 @@ void Renderer::cleanup()
 {
     swapChain.cleanup();
 
-    vkDestroySampler(device->getLogicalDevice(), textureSampler, nullptr);
+    VkDevice logicalDevice = device->getLogicalDevice();
+
+    vkDestroySampler(logicalDevice, textureSampler, nullptr);
 
     for (auto texture : textures)
     {
         texture.cleanup();
     }
 
-    vkDestroyDescriptorPool(device->getLogicalDevice(), descriptorPool, nullptr);
-    vkDestroyDescriptorSetLayout(device->getLogicalDevice(), descriptorSetLayout, nullptr);
+    vkDestroyDescriptorPool(logicalDevice, descriptorPool, nullptr);
+    vkDestroyDescriptorSetLayout(logicalDevice, descriptorSetLayout, nullptr);
 
     for (size_t i = 0; i < swapChain.getImageCount(); i++)
     {
-        vkDestroyBuffer(device->getLogicalDevice(), uniformBuffers[i], nullptr);
-        vkFreeMemory(device->getLogicalDevice(), uniformBuffersMemory[i], nullptr);
+        vkDestroyBuffer(logicalDevice, uniformBuffers[i], nullptr);
+        vkFreeMemory(logicalDevice, uniformBuffersMemory[i], nullptr);
     }
 
     vkDestroyBuffer(device->getLogicalDevice(), indexBuffer, nullptr);

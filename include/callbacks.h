@@ -1,5 +1,6 @@
 #ifndef CALLBACKS_H
 #define CALLBACKS_H
+#pragma once
 
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>

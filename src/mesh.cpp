@@ -2,6 +2,8 @@
 
 #include <unordered_map>
 
+#include "vertex.h"
+
 void Mesh::loadModelFromFile(std::string path)
 {
     std::string err;

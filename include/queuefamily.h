@@ -1,5 +1,6 @@
 #ifndef QUEUEFAMILY_H
 #define QUEUEFAMILY_H
+#pragma once
 
 #include <algorithm>
 

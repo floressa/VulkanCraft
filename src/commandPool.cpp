@@ -2,6 +2,8 @@
 
 #include <stdexcept>
 
+#include "device.h"
+
 void CommandPool::init(Device* inDevice)
 {
     device = inDevice;

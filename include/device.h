@@ -1,11 +1,12 @@
 #ifndef DEVICE_H
 #define DEVICE_H
+#pragma once
 
 #include <vulkan/vulkan.h>
 
 #include <vector>
 
-#include "queuefamily.h"
+struct QueueFamilyIndices;
 
 const std::vector<const char*> deviceExtensions = {VK_KHR_SWAPCHAIN_EXTENSION_NAME};
 
@@ -20,10 +21,7 @@ struct SwapChainSupportDetails
 class Device
 {
 public:
-    Device();
-    ~Device();
-
-    void init(VkInstance& instance);
+    void init(VkInstance& instance, bool enableValidationLayers = true);
     void cleanup();
 
     void waitIdle();
@@ -72,7 +70,7 @@ private:
 
     void pickPhysicalDevice(VkInstance& instance);
     bool isDeviceSuitable(VkPhysicalDevice device);
-    void createLogicalDevice();
+    void createLogicalDevice(bool enableValidationLayers = true);
 
     bool checkDeviceExtensionSupport(VkPhysicalDevice device);
 
