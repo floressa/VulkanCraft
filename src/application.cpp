@@ -34,6 +34,11 @@ void DestroyDebugUtilsMessengerEXT(
     }
 }
 
+Application::Application()
+{
+    device = new Device();
+}
+
 void Application::run()
 {
     initWindow();
@@ -62,8 +67,8 @@ void Application::initVulkan()
     // Device.h
     device.init(instance);
 
-    // ! Renderer.h
-    renderer.init(device);
+    // Renderer.h
+    renderer.init(&device);
 }
 
 void Application::cleanup()

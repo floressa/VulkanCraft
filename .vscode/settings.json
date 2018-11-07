@@ -3,7 +3,8 @@
         "iosfwd": "cpp",
         "optional": "cpp",
         "iostream": "cpp",
-        "*.tcc": "cpp"
+        "*.tcc": "cpp",
+        "new": "cpp"
     },
     "C_Cpp.intelliSenseEngineFallback": "Enabled",
     "cmake.generator": "Ninja"
