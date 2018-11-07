@@ -1,5 +1,7 @@
 # Vulkan Engine Learning
 
+**Please note that this project is very much a work in progress and is not currently working**
+
 This project is a learning exercise to try to create an engine structure using  Vulkan as the base graphics API and a few popular utility libraries
 
 ## Getting Started
