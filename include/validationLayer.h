@@ -1,5 +1,3 @@
-#ifndef VALIDATIONLAYER_H
-#define VALIDATIONLAYER_H
 #pragma once
 
 #include <vector>
@@ -11,6 +9,3 @@ const bool enableValidationLayers = true;
 #endif
 
 const std::vector<const char*> validationLayers = {"VK_LAYER_LUNARG_standard_validation"};
-
-
-#endif

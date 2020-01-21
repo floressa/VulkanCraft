@@ -1,5 +1,3 @@
-#ifndef COMMANDPOOL_H
-#define COMMANDPOOL_H
 #pragma once
 
 #include <vulkan/vulkan.h>
@@ -27,5 +25,3 @@ private:
     void createCommandPool();
     void createCommandBuffers();
 };
-
-#endif

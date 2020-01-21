@@ -1,5 +1,3 @@
-#ifndef MESH_H
-#define MESH_H
 #pragma once
 
 #include <string>
@@ -32,5 +30,3 @@ private:
     
     void extractVertexData();
 };
-
-#endif

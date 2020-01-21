@@ -1,5 +1,4 @@
-#ifndef VERTEX_H
-#define VERTEX_H
+#pragma once
 
 #include <vulkan/vulkan.h>
 
@@ -69,5 +68,3 @@ namespace std
         }
     };
 }
-
-#endif

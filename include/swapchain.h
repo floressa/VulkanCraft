@@ -1,6 +1,3 @@
-#ifndef SWAPCHAIN_H
-#define SWAPCHAIN_H
-
 #include <vulkan/vulkan.h>
 
 #include <vector>
@@ -69,5 +66,3 @@ private:
     VkExtent2D chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities);
 
 };
-
-#endif

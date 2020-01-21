@@ -1,5 +1,3 @@
-#ifndef CALLBACKS_H
-#define CALLBACKS_H
 #pragma once
 
 #define GLFW_INCLUDE_VULKAN
@@ -17,5 +15,3 @@ static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(
 
     return VK_FALSE;
 }
-
-#endif

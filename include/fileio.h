@@ -1,5 +1,3 @@
-#ifndef FILEIO_H
-#define FILEIO_H
 #pragma once
 
 #include <iostream>
@@ -24,5 +22,3 @@ static std::vector<char> readFile(const std::string& filename)
     file.close();
     return buffer;
 }
-
-#endif

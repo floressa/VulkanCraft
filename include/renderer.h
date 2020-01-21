@@ -1,5 +1,3 @@
-#ifndef RENDERER_H
-#define RENDERER_H
 #pragma once
 
 #include <vulkan/vulkan.h>
@@ -82,5 +80,3 @@ private:
 
     VkFormat findDepthFormat();
 };
-
-#endif

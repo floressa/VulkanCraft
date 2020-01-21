@@ -1,5 +1,4 @@
-#ifndef TEXTURE_H
-#define TEXTURE_H
+#pragma once
 
 #include <vulkan/vulkan.h>
 
@@ -39,5 +38,3 @@ private:
     void generateMipMaps(VkImage image, VkFormat imageFormat, int32_t texWidth,
         int32_t texHeight, uint32_t mipLevels);
 };
-
-#endif

@@ -1,5 +1,3 @@
-#ifndef APPLICATION_H
-#define APPLICATION_H
 #pragma once
 
 #define GLFW_INCLUDE_VULKAN
@@ -53,5 +51,3 @@ private:
         app->framebufferResized = true;
     }
 };
-
-#endif

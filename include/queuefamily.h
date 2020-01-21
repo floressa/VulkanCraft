@@ -1,5 +1,3 @@
-#ifndef QUEUEFAMILY_H
-#define QUEUEFAMILY_H
 #pragma once
 
 #include <algorithm>
@@ -25,5 +23,3 @@ struct QueueFamilyIndices
         return graphicsFamilySet && presentFamilySet;
     }
 };
-
-#endif

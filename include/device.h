@@ -1,5 +1,3 @@
-#ifndef DEVICE_H
-#define DEVICE_H
 #pragma once
 
 #include <vulkan/vulkan.h>
@@ -82,5 +80,3 @@ private:
     // ! May need to move this
     bool hasStencilComponent(VkFormat format);
 };
-
-#endif
